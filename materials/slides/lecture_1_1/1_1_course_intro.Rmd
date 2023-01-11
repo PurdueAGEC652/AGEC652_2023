@@ -258,22 +258,14 @@ name:introductions
 
 ## Office hours
 
-(From next week)
+(From next week, updated)
 
-- Mondays 11 AM to 12 PM
+- Mondays 2:30 PM to 3:30 PM
 
-- Wednesdays 1:30 PM to 2:30 PM (you have priority these days)
+- Wednesdays 11 AM to 12 PM (you have priority these days)
 
 - I will schedule a meeting room for office hours. Typically, I'll be there and you can pop in at anytime with your laptop for help with the course (or general programming questions)
 
-
----
-
-Before we continue, some
-
-##.center[.blue[Acknowledgments]]
-
-.center[*These slides build on materials provided by Ivan Rudik (Cornell University) and on the textbooks and other sources referenced in the syllabus/reading list.*]
 
 ---
 
@@ -281,6 +273,8 @@ class: inverse, center, middle
 name: why
 
 # Why computational methods?
+
+.footnote[*These slides build on materials provided by Ivan Rudik (Cornell University) and on the textbooks and other sources referenced in the syllabus/reading list.*]
 
 
 ---
