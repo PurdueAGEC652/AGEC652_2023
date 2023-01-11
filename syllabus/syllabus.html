@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>syllabus.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="syllabus-agec-652-%E2%80%93-spring-2023----omit-in-toc">Syllabus AGEC 652 – Spring 2023 <!-- omit in toc --></h1>
+<p><em>This syllabus is subject to revisions. You will be notified of any changes as far in advance as possible. Please monitor your Purdue email and Brightspace for updates. This version was created on Jan. 10, 2023.</em></p>
+<h2 id="course-information----omit-in-toc">Course information <!-- omit in toc --></h2>
+<p><strong>AGEC 652 - Application of Quantitative Analysis: Mathematical Programming</strong></p>
+<p><strong>CRN:</strong> 10357</p>
+<p><strong>Meeting days and times:</strong> Mon/Wed 4:30 - 5:45 PM, Jerry S Rawls Hall (RAWL) 1071</p>
+<p><strong>Instructional Modality:</strong> Face-to-face</p>
+<p><strong>Course credit hours:</strong> 3.0 credits</p>
+<p><strong>Course website:</strong> Brightspace <a href="https://purdue.brightspace.com">(https://purdue.brightspace.com)</a></p>
+<p><strong>Prerequisites:</strong> AGEC 552 or ECON 615. Alternatively, you should have a thorough understanding of matrix algebra and differential calculus, which are fundamental to this course. Familiarity with computer programming is desirable. In addition, some of the applications will require knowledge of basic game theory concepts such as Nash and subgame perfect equilibria. Please reach out to me if you would like to discuss your background and possible supplemental materials.</p>
+<h2 id="instructor-information----omit-in-toc">Instructor information <!-- omit in toc --></h2>
+<p><strong>Instructor:</strong> Diego S. Cardoso</p>
+<p><strong>Office hours:</strong> <strong>In KRAN 680</strong> Mondays 2:30 PM to 3:30 PM, Wednesdays 11 AM to 12 PM. (Starting from Jan. 18). This course has priority on Wednesdays.</p>
+<p><strong>Email:</strong> <a href="mailto:cardosod@purdue.edu">cardosod@purdue.edu</a>. Please include &quot;AGEC652&quot; in the subject for all emails. I will read and respond to course-related emails in a timely fashion during weekdays between 9 AM and 5 PM.</p>
+<p><strong>Office:</strong> Krannert 636</p>
+<p><strong>Phone:</strong> (765) 494-4212</p>
+<ul>
+<li><a href="#course-description">Course description</a></li>
+<li><a href="#learning-outcomes">Learning outcomes</a></li>
+<li><a href="#learning-resources-and-technology">Learning resources and technology</a></li>
+<li><a href="#assignments-and-grading">Assignments and grading</a>
+<ul>
+<li><a href="#types-of-assessments">Types of assessments</a></li>
+<li><a href="#tokens">Tokens</a></li>
+<li><a href="#reassessment">Reassessment</a></li>
+<li><a href="#course-grade">Course grade</a></li>
+</ul>
+</li>
+<li><a href="#academic-integrity">Academic integrity</a></li>
+<li><a href="#attendance-policy">Attendance policy</a></li>
+<li><a href="#course-evaluation">Course evaluation</a></li>
+<li><a href="#course-schedule">Course schedule</a></li>
+<li><a href="#nondiscrimination-statement">Nondiscrimination statement</a></li>
+<li><a href="#accessibility">Accessibility</a></li>
+<li><a href="#mental-health-and-wellness-statement">Mental health and wellness statement</a></li>
+<li><a href="#basic-needs-security">Basic needs security</a></li>
+<li><a href="#emergency-preparation">Emergency preparation</a></li>
+<li><a href="#learning-standards">Learning standards</a></li>
+</ul>
+<hr>
+<h2 id="course-description">Course description</h2>
+<p>This course will introduce you to key computational methods used in applied economics research and prepare you to use these methods in your own projects. The overall objective of this course is to expand your skills for applied research by adding numerical methods to your toolset: you will understand why and when computational methods are needed in economics research, learn to identify and model economic problems that can be solved with such methods, and apply the appropriate method for each type of problem.</p>
+<p>This course can be conceptually divided into three parts. In the first part, we will cover the fundamentals of scientific computing and best practices for research. In the second part, we will study and apply core computational methods, including numerical calculus and linear algebra, systems of equations, and constrained and unconstrained optimization. In the third and final part, we will see how to take to data the models we learned to solve and introduce structural estimation of static models.</p>
+<h2 id="learning-outcomes">Learning outcomes</h2>
+<p>By the end of this course, you should be able to:</p>
+<ol>
+<li>Set up and manage a small scientific computing project</li>
+<li>Program computational routines in Julia to solve numerical problems</li>
+<li>Calculate numerical derivatives and integrals</li>
+<li>Find numerical solutions for linear and nonlinear systems of equations</li>
+<li>Calculate numerical function approximations</li>
+<li>Find numerical solutions for constrained and unconstrained optimization problems</li>
+<li>Program estimators for structural economic modeling</li>
+</ol>
+<p>These learning outcomes correspond to twenty specific learning standards, which are listed <a href="#learning-standards">at the bottom of this syllabus</a>.</p>
+<h2 id="learning-resources-and-technology">Learning resources and technology</h2>
+<p><strong>Readings</strong></p>
+<p>This course will be based on lecture notes/slides and select research papers. Course materials and references to research papers will be posted on the course website.</p>
+<p>The second part of the course will be closely related to select chapters from the textbooks listed below. While there is no official textbook for this course, I recommend that you consult these references for a deeper understanding of the methods we review in class with limited time.</p>
+<ul>
+<li>[MF02] Miranda, Mario J. and Paul L. Fackler. <em>Applied Computational Economics and Finance</em>. Cambridge, MA: MIT Press, 2002.</li>
+<li>[J98] Judd, Kenneth L. <em>Numerical Methods in Economics</em>. Cambridge, MA: MIT Press, 1998.</li>
+<li>[NW06] Nocedal, J. and S. J. Wright. <em>Numerical Optimization</em>. New York: Springer, 2nd edition, 2006.</li>
+</ul>
+<p>Purdue Library offers online access to [MF02] and [NW06] and physical copies of [J98].</p>
+<p><strong>Software</strong></p>
+<p>Coding examples in this course will use <a href="https://julialang.org">Julia language</a>. Julia is a modern open-source programming language with excellent performance for numerical methods. It has an intuitive syntax and offers many packages to automate the methods we will learn and practice in this course. During the first part of the course, we will go over how to set up your coding environment for Julia.</p>
+<p>Two good introductions to Julia are:</p>
+<ul>
+<li>Learning Julia <a href="https://julialang.org/learning">(https://julialang.org/learning)</a></li>
+<li>QuantEcon Julia lectures 1 to 5 <a href="https://julia.quantecon.org/intro.html">(https://julia.quantecon.org/intro.html)</a>.</li>
+</ul>
+<p><strong>Hardware</strong></p>
+<p>This course is designed to offer several opportunities for your to code and experiment with the methods we study. For this reason, you will need to bring a laptop to class. Please let me know if you do not have access to a laptop for that purpose.</p>
+<p><em>A note on class conduct and etiquette</em>: You are encouraged to bring a laptop to class. However, please limit your use of the laptop to either working on programming examples or taking notes. Please refrain from using other mobile devices – phones or tablets – as they are distracting to you and others around you (if you have an emergency or other reason that requires you to monitor these devices, please let me know in advance). If a student’s use of an electronic device is disruptive to teaching and/or learning, I will ask that the student to discontinue the use of that device. Please be considerate of those around you.</p>
+<hr>
+<h2 id="assignments-and-grading">Assignments and grading</h2>
+<p><em>(The assessment structure in this course is quite different from the traditional way in graduate courses. Please read this section closely.)</em></p>
+<p>To effectively learn computational methods, one must learn how to program and use them. In this course, all activities and assignments are designed to guide you through the process of learning the course concepts and how to put them into practice. Some of your work will be collected and graded, and it will directly contribute to your course grade.</p>
+<p>This course follows a methodology called Standards-Based Grading. There is a list of 20 learning standards for this course <a href="#learning-standards">at the bottom of this syllabus</a>, 8 of which are indicated as core standards. Instead of receiving a numerical score, you will instead be graded as either Mastered or Not Yet Mastered on each standard that is on that assessment. Standards will be assessed multiple times throughout the semester. Unlike most classes, these numbers will not be averaged. Instead, your grade will be computed in a way that rewards growth and continued mastery of the material. <strong>Each standard will be scored as Not Yet Mastered (NY), Mastered (MS), or Continued Mastery (CM)</strong>. These are defined as having demonstrated mastery on 0, 1, or 2+ assessments, respectively.</p>
+<h3 id="types-of-assessments">Types of assessments</h3>
+<p>There will be three types of assessments: weekly problems, mini-project, and in-class practice.</p>
+<p><strong>1. Weekly problems</strong></p>
+<p>In most weeks, you will be assigned a problem that relates to recent topics we covered in class. These problems will typically be released on Fridays, and you will have one week to submit your solution.</p>
+<ul>
+<li><strong>Submissions are individual</strong>. You are encouraged to discuss the problem with your classmates (and with me), but the code you submit must represent your attempt to solve the problem.</li>
+<li><strong>Weekly problems are assessed based on the <a href="#learning-standards">learning standards</a> clearly indicated in each problem and will be graded as Satisfactory or Unsatisfactory.</strong> Each submission will be graded Satisfactory if it meets the following two criteria:
+<ul>
+<li>
+<ol>
+<li>The assignment is submitted before the deadline. Submissions past the deadline will be automatically marked Unsatisfactory.</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>The assignment shows a good-faith effort to solve the proposed problems. This is similar to the criterion used for weekly problems. Submissions that do not attempt to solve a substantial part of the problem or have answers where a good-faith effort is not evident - for example, if the response is &quot;I don't know&quot; or &quot;I don't understand&quot; - will be automatically marked Unsatisfactory.</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>If your submission is <em>Satisfactory</em>, the feedback you receive will indicate whether you demonstrated mastery for each standard. If your submission is <em>Unsatisfactory</em>, it will not be used to assess any learning standards.</li>
+</ul>
+<p><strong>2. Mini-project</strong></p>
+<p>During the second half of this course, you will develop, present, and submit a mini-project. This mini-project consists of a narrow but well-defined economic question that you will formulate as a computational problem and solve. Later in the course, I will give you a list of suggested questions for your mini-project, but you are free to propose your own.</p>
+<p>You will submit a <strong>one-page proposal</strong> for the mini-project around week 9 (the exact date will be announced in advance). <em>This proposal will not be graded.</em> It will serve for me to give you feedback and suggest any adjustments to make sure your project is feasible and in line with the assignment expectations (most frequently, students shoot for projects that require much more effort than necessary).</p>
+<ul>
+<li><strong>Submissions are individual</strong>. You are encouraged to discuss your project with classmates (and with me), but your mini-project question must be unique (i.e., it cannot be the same question as someone else in the course) and the materials you submit must reflect your individual work.</li>
+<li>A complete submission of the mini-project has three components:
+<ol>
+<li>A 10-minute presentation to the class during Week 16.</li>
+<li>A code package that is reproducible (I can easily run it and check your results) and documented (I can find instructions on how to run it).</li>
+<li>A report that briefly defines the question, the computational approach, and the results. This report should have an 11-point font, 1.5 line spacing, 1-inch margins, and a maximum length of 3 pages (excluding tables, graphs, and references).
+-There are two parts to the grading of mini-projects:</li>
+</ol>
+<ul>
+<li>
+<ol>
+<li>It will be used as an additional assessment of the Scientific Programming <a href="#learning-standards">learning standards</a> <strong>plus up to 5 other standards you can choose</strong> to be evaluated on. After you submit your proposal, we will have an individual feedback meeting where we will discuss your choice of standards. You may ask to change these standards as you make progress in the project, and I will consider these changes individually.</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>The overall mini-project submission will be graded using the EMRN rubric, a four-level rubric that marks the work with grades of E (Excellent/Exemplary), M (Meets expectations), R (needs Revision), or N (Not assessable). See the diagram below summarizing how this rubric works. I will give you feedback on your presentation and indicate whether you are on track to achieve your intended grade in the mini-project.</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src="emrn.png" alt="EMRN_rubric"></p>
+<p><strong>3. In-class practice</strong></p>
+<p>In-class practice comes in two flavors:</p>
+<ul>
+<li>A) <strong>Quick problems</strong> will happen during short lecture breaks (5 to 10 minutes) to give you a chance to approach a new problem and try to structure a solution. In most cases, this short break will not be enough for you to program a complete solution. Don’t despair: that is intentional! The goal is for you to better understand a problem by attempting to solve it before you see a &quot;textbook solution.&quot;</li>
+<li>B) <strong>Labs</strong> will happen in class during a longer session (30+ minutes) where you will attempt to solve a more elaborate problem by following step-by-step instructions. Typically, you will be asked to solve a sequence of smaller problems that will lead you to a complete solution.</li>
+</ul>
+<p>The following rules apply to quick problems and labs:</p>
+<ul>
+<li><em>Submissions are individual</em>. You are encouraged to discuss the problem with your classmates, but you must type and submit your own solution code. You will receive instructions on how to submit in-class activities in the first part of the course.</li>
+<li><em>In-class practice submissions are graded as Satisfactory or Unsatisfactory.</em> Each submission will be graded Satisfactory if it meets the following two criteria:
+<ul>
+<li>The assignment is submitted before the deadline: typically, by the end of the class (i.e., 5:45 PM). Submissions past the deadline will be automatically marked Unsatisfactory.</li>
+<li>The assignment shows a good-faith effort to solve the proposed problems. This is similar to the criterion used for weekly problems.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Most importantly, note that correctness is not factored into the grade for in-class practice</strong>, so you should feel free to give your best effort on each one without fear of being counted off for wrong answers. In fact, allowing you to have misconceptions and making code errors with very low stakes is the main goal of these activities, so that you can receive prompt feedback and improve.</p>
+<h3 id="tokens">Tokens</h3>
+<p>Tokens are a &quot;currency&quot; in this course that you can use to purchase exceptions to the course rules. <strong>Each student begins the course with five tokens</strong>, and tokens can purchase any of the following:</p>
+<ul>
+<li>A 48-hour extension of the submission deadline of a weekly problem.</li>
+<li>A 48-hour extension of the submission deadline of the in-class practice of one lecture.</li>
+<li>A reassessment of one learning standard (see details below).</li>
+</ul>
+<p>Opportunities to earn more tokens may be made available during the semester.</p>
+<h3 id="reassessment">Reassessment</h3>
+<p>One key aspect of this system is constant reassessment. A standard can be reassessed explicitly on another weekly problem, even if the main topic has changed (for example, a problem assessing optimization could also assess your mastery of numerical differentiation). Additionally, you can request to be reassessed on a standard during my office hours. This reassessment can take several forms, such as:</p>
+<ul>
+<li>I might make up a problem or two and have you solve it.</li>
+<li>I might ask you to revise your answer to a problem and explain your rationale.</li>
+<li>I might ask you to explain the concept using pen and paper.</li>
+</ul>
+<p>A few rules apply to office hour reassessments:</p>
+<ul>
+<li>Office hour reassessments are given at the discretion of the instructor: they are not guaranteed opportunities. Reassessment opportunities may be limited by practical considerations, such as time - particularly towards the end of the semester.</li>
+<li>You need to email me requesting a reassessment <em>at least one week in advance</em> of your intended reassessment date and indicate which standard you want to be reassessed.</li>
+<li>In order to reassess a standard, you must have earned Satisfactory in at least one weekly problem corresponding to that standard.</li>
+<li>You can ask to demonstrate <em>Continued Mastery</em> of a standard. However, to qualify as <em>Continued Mastery</em>, it must be at least a week after you first mastered the standard.</li>
+</ul>
+<p><strong>Remember: The goal is to view reassessments as opportunities for you to demonstrate your continuous improvement and mastery.</strong></p>
+<h3 id="course-grade">Course grade</h3>
+<p>Your final grade in the course is determined by the following table. Each grade has a <em>requirement</em> specified in its row in the table. <strong>To earn a grade, you will need to meet ALL the requirements in the row for that grade</strong>. Put differently, your grade is the <strong>highest</strong> grade level for which <strong>all</strong> the requirements in a row of the table have been met or exceeded.</p>
+<table>
+<thead>
+<tr>
+<th>Grade</th>
+<th>Core standards</th>
+<th>Supplementary standards</th>
+<th>Weekly problems</th>
+<th>Mini-project</th>
+<th>In-class practice</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td>Mastery in all 8 + Continued Mastery in at least 6</td>
+<td>Mastery in at least 10 + Continued Mastery in 8</td>
+<td>Satisfactory in at least 75%</td>
+<td>Received E</td>
+<td>Satisfactory in at least 75%</td>
+</tr>
+<tr>
+<td>B</td>
+<td>Mastery in all 8 + Continued Mastery in at least 4</td>
+<td>Mastery in at least 8 + Continued Mastery in 4</td>
+<td>Satisfactory in at least 75%</td>
+<td>Received at least M</td>
+<td>Satisfactory in at least 75%</td>
+</tr>
+<tr>
+<td>C</td>
+<td>Mastery in all 8</td>
+<td>Mastery in at least 4</td>
+<td>Satisfactory in at least 50%</td>
+<td>Received at least R</td>
+<td>Satisfactory in at least 50%</td>
+</tr>
+<tr>
+<td>D</td>
+<td>Mastery in at least 6</td>
+<td>No requirements</td>
+<td>Satisfactory in at least 50%</td>
+<td>Received at least R</td>
+<td>Satisfactory in at least 50%</td>
+</tr>
+</tbody>
+</table>
+<p>A grade of F is given if none of the rows has been fully completed.</p>
+<p><strong>Plus/minus grades</strong>: Plus/minus grades will be assigned at my discretion based on how close you are to the next higher or lower grade level.</p>
+<p>The minimum requirements for grade determination might be lowered at the time of final grade assignment at the instructor’s discretion (e.g., the required number of mastered standards to earn B might be decreased). Any adjustment in the grade scale will be applied uniformly to all students.</p>
+<h2 id="academic-integrity">Academic integrity</h2>
+<p>The work you submit in this course must reflect exclusively your effort and must not come significantly from the work of others. I encourage you to study and discuss the course materials and assignments with your peers. However, you are responsible for making sure that you follow the rules laid out in this syllabus and in Purdue University's Academic Integrity definitions <a href="https://www.purdue.edu/odos/osrr/academic-integrity/index.html">(https://www.purdue.edu/odos/osrr/academic-integrity/index.html)</a>.</p>
+<p>If for any reason you find yourself under excessive pressure or stress and feel tempted to break our Academic Integrity rules, <strong>PLEASE STOP AND GET HELP</strong> from me, the instructor. I am available and willing to work with you to help you succeed in this course through your legitimate hard work.</p>
+<p>In addition to Purdue's Academic Integrity rules, in this course we will adopt the following specific policies:</p>
+<ul>
+<li><strong>Weekly problems</strong>: you are encouraged to discuss the problem with your classmates (and with me), but the code you submit must represent your attempt to solve the problem.</li>
+<li><strong>Mini-project</strong>: you are encouraged to discuss your project with classmates (and with me), but the materials you submit must reflect your individual work.</li>
+<li><strong>In-class practice:</strong> you are encouraged to discuss the problem with your classmates, but you must type and submit your own solution code.</li>
+</ul>
+<p><strong>Any evidence of plagiarism will be investigated as a violation of academic integrity.</strong> The instructor reserves the right to use any tools available for detecting plagiarism in code and text submitted in the assignments. These include, but are not limited to, <a href="https://www.turnitin.com/">Turnitin</a> and software with <a href="https://en.wikipedia.org/wiki/Content_similarity_detection#In_source_code">specialized algorithms for detecting code similarity</a>. Comparisons might be made between submissions of enrolled students, and a bank of solutions from past offerings, and code available on the Internet.</p>
+<p>Academic integrity is one of the highest values that Purdue University holds. Incidents of academic misconduct in this course will be addressed by the course instructor and referred to the Office of Student Rights and Responsibilities (OSRR) for review at the university level. Any violation of course policies as it relates to academic integrity will result minimally in a failing or zero grade for that particular assignment, and at the instructor’s discretion, may result in a failing grade for the course. In addition, all incidents of academic misconduct will be forwarded to OSRR, where university penalties, including removal from the university, may be considered. More details are available on our course Brightspace under University Policies and Statements.</p>
+<h2 id="attendance-policy">Attendance policy</h2>
+<p>This course follows Purdue’s academic regulations regarding attendance, which states that students are expected to be present for every meeting of the classes in which they are enrolled. Attendance will not be taken directly, but your engagement will be assessed through your participation during in-class activities and office hours and on-time assignment submissions. If you must miss a class at any point in time during the semester - be it for reasons excused by the University (see the <a href="https://catalog.purdue.edu/content.php?catoid=15&amp;navoid=18634#classes">Academic Regulations and Student Conduct section</a> or otherwise - please reach out to me as soon as possible via Purdue email so that we can communicate about how you can maintain your academic progress. I will analyze and make accommodations on a case-by-case basis. If you find yourself too sick to progress in the course, notify your adviser (or program coordinator) and notify me via Purdue email; we will work together to make arrangements based on your particular situation. If you are unable to make direct contact with me and are unable to leave word with the department because of circumstances beyond your control, you or your representative should contact or go to the <a href="https://www.purdue.edu/advocacy/students/absences.html">Office of the Dean of Students website</a> to complete appropriate forms for instructor notification.</p>
+<h2 id="course-evaluation">Course evaluation</h2>
+<p>During the semester, I will ask for your informal feedback on the course. Participation is anonymous and voluntary. This early feedback will be highly appreciated. It is also an opportunity for your perceptions and concerns to be expressed and for me to make any appropriate adjustments to the course structure before the end of the semester.</p>
+<p>Toward the end of this semester, you will be provided with an opportunity to give formal feedback on this course and your instructor. Purdue uses an online course evaluation system. You will receive an official email from evaluation administrators with a link to the online evaluation site and will receive a prompt to complete the survey when you log into Brightspace. Your participation is an integral part of this course, and your feedback is vital to improving education at Purdue University. I strongly urge you to participate in the evaluation system.</p>
+<h2 id="course-schedule">Course schedule</h2>
+<p>The planned schedule below lists the topics we will cover in this course and the approximate weeks when we will see them. This schedule is subject to change, as we may need to make adjustments along the way.</p>
+<p><strong>Part I - Introduction to Scientific Computing</strong></p>
+<ol>
+<li>Computing for applied research projects and best practices (weeks 1-3)
+<ol>
+<li>Motivation for computational methods in economics</li>
+<li>Project organization, reproducibility, version control</li>
+<li>Introduction to programming with Julia</li>
+</ol>
+</li>
+</ol>
+<p><strong>Part II - Core numerical methods</strong></p>
+<ol start="2">
+<li>
+<p>Fundamentals of numerical operations (weeks 3-5)</p>
+<ol>
+<li>Basic computer architecture and numerical arithmetic</li>
+<li>Numerical differentiation and integration</li>
+</ol>
+</li>
+<li>
+<p>Systems of equations (weeks 5-8)</p>
+<ol>
+<li>Linear systems of equations and iterative methods</li>
+<li>Nonlinear systems of equations: bisection, function iteration, Newton, quasi-Newton methods</li>
+</ol>
+</li>
+<li>
+<p>Function approximation (weeks 8-9)</p>
+<ol>
+<li>Interpolation: spectral and finite element methods</li>
+<li>Functional equations and the collocation method</li>
+</ol>
+</li>
+</ol>
+<ul>
+<li><em>(Week 10: Spring break)</em></li>
+</ul>
+<ol start="5">
+<li>Optimization (weeks 11-13)
+<ol>
+<li>Unconstrained optimization: bracketing, Nelder-Mead, line search, trust region</li>
+<li>Constrained optimization: KKT, penalty methods</li>
+</ol>
+</li>
+</ol>
+<p><strong>Part III - Bringing data in</strong></p>
+<ol start="6">
+<li>Introduction to structural estimation (weeks 13-15)
+<ol>
+<li>Fundamentals of structural estimation</li>
+<li>Review of MLE and GMM</li>
+<li>Estimating static, single-agent models</li>
+<li>Estimating static, multiple-agent models</li>
+</ol>
+</li>
+</ol>
+<ul>
+<li>Week 16: Mini-project presentations</li>
+</ul>
+<hr>
+<h2 id="nondiscrimination-statement">Nondiscrimination statement</h2>
+<p>Purdue University is committed to maintaining a community which recognizes and values the inherent worth and dignity of every person; fosters tolerance, sensitivity, understanding, and mutual respect among its members; and encourages each individual to strive to reach his or her potential. In pursuit of its goal of academic excellence, the University seeks to develop and nurture diversity. The University believes that diversity among its many members strengthens the institution, stimulates creativity, promotes the exchange of ideas, and enriches campus life. Purdue’s full Nondiscrimination Policy Statement is available at <a href="https://www.purdue.edu/purdue/ea_eou_statement.php">(https://www.purdue.edu/purdue/ea_eou_statement.php)</a>.</p>
+<h2 id="accessibility">Accessibility</h2>
+<p>Purdue University is committed to making learning experiences accessible. If you anticipate or experience physical or academic barriers based on disability, you are welcome to let me know so that we can discuss options. You are also encouraged to contact the Disability Resource Center at: drc@purdue.edu or by phone: 765-494-1247.</p>
+<h2 id="mental-health-and-wellness-statement">Mental health and wellness statement</h2>
+<p>If you find yourself beginning to feel some stress, anxiety and/or feeling slightly overwhelmed, try <a href="https://purdue.welltrack.com">WellTrack</a>. Sign in and find information and tools at your fingertips, available to you at any time.</p>
+<p>If you need support and information about options and resources, please contact or see the <a href="http://www.purdue.edu/odos">Office of the Dean of Students</a>. Call 765-494-1747. Hours of operation are M-F, 8 am- 5 pm.</p>
+<p>If you find yourself struggling to find a healthy balance between academics, social life, stress, etc. sign up for free one-on-one virtual or in-person sessions with a <a href="https://www.purdue.edu/recwell/fitness-wellness/wellness/one-on-one-coaching/wellness-coaching.php">Purdue Wellness Coach at RecWell</a>. Student coaches can help you navigate through barriers and challenges toward your goals throughout the semester. Sign-up is completely free and can be done on BoilerConnect. If you have any questions, please contact Purdue Wellness at evans240@purdue.edu.</p>
+<p>If you’re struggling and need mental health services: Purdue University is committed to advancing the mental health and well-being of its students. If you or someone you know is feeling overwhelmed, depressed, and/or in need of mental health support, services are available. For help, such individuals should contact <a href="https://www.purdue.edu/caps/">Counseling and Psychological Services (CAPS)</a> at 765-494-6995 during and after hours, on weekends and holidays, or by going to the CAPS office on the second floor of the Purdue University Student Health Center (PUSH) during business hours. The <a href="https://www.purdue.edu/caps/covid-19/index.html">CAPS website</a> also offers resources specific to situations such as COVID-19.</p>
+<h2 id="basic-needs-security">Basic needs security</h2>
+<p>Any student who faces challenges securing their food or housing and believes this may affect their performance in the course is urged to contact the Dean of Students for support. There is no appointment needed and Student Support Services is available to serve students 8 a.m.-5 p.m. Monday through Friday.</p>
+<h2 id="emergency-preparation">Emergency preparation</h2>
+<p>In the event of a major campus emergency, course requirements, deadlines and grading percentages are subject to changes that may be necessitated by a revised semester calendar or other circumstances beyond the instructor’s control. Relevant changes to this course will be posted onto the course website or can be obtained by contacting the instructors or TAs via email or phone. You are expected to read your @purdue.edu email on a frequent basis.</p>
+<hr>
+<h2 id="learning-standards">Learning standards</h2>
+<p>Learning standards are organized into six topics. The eight learning standards written in bold font are classified as <strong>core standards</strong> (P.3, C.1, C.3, C.4, S.1, S.2, O.1, O.2). The remaining twelve standards are refereed to as <em>supplementary standards</em>.</p>
+<p><strong>Scientific Programming (P)</strong></p>
+<ul>
+<li>P.1 - I can organize a computational project with adequate version control using GitHub</li>
+<li>P.2 - I can produce computer code that is easy to read and well documented/commented</li>
+<li><strong>P.3 - I can write a program with adequate flow control and using functions I define</strong></li>
+<li>P.4 - I can write a program with efficient iterations and correct use of vectorization/broadcasting</li>
+</ul>
+<p><strong>Numerical Calculus (C)</strong></p>
+<ul>
+<li><strong>C.1 - I can explain and numerically calculate derivatives with finite differences</strong></li>
+<li>C.2 - I can explain and numerically calculate derivatives with automatic differentiation</li>
+<li><strong>C.3 - I can explain and numerically calculate integrals with stochastic approximation</strong></li>
+<li><strong>C.4 - I can explain and numerically calculate integrals with quadrature methods</strong></li>
+</ul>
+<p><strong>Systems of Equations (S)</strong></p>
+<ul>
+<li><strong>S.1 - I can numerically solve linear systems of equations and identify ill-conditioned problems</strong></li>
+<li><strong>S.2 - I can computationally represent nonlinear systems of equations as fixed-point and rootfinding problems and numerically solve them</strong></li>
+<li>S.3 - I can computationally represent and numerically solve nonlinear complementarity problems</li>
+<li>S.4 - I can identify and explain the pros and cons of different solution methods, including derivative-free, Newton, and Quasi-Newton methods</li>
+</ul>
+<p><strong>Function Approximation (A)</strong></p>
+<ul>
+<li>A.1 - I can explain and program function interpolations with spectral methods</li>
+<li>A.2 - I can explain and program function interpolations with finite element methods</li>
+<li>A.3 - I can computationally represent and numerically solve functional equations using the collocation method</li>
+</ul>
+<p><strong>Optimization (O)</strong></p>
+<ul>
+<li><strong>O.1 - I can computationally represent and numerically solve unconstrained optimization problems</strong></li>
+<li><strong>O.2 - I can computationally represent and numerically solve constrained optimization problems</strong></li>
+<li>O.3 - I can interpret and explain the output of solvers to identify performance and accuracy issues</li>
+</ul>
+<p><strong>Structural Estimation (E)</strong></p>
+<ul>
+<li>E.1 - I can program a Maximum Likelihood estimator and use it to estimate a structural model</li>
+<li>E.2 - I can program a Generalized Method of Moments estimator and use it to estimate a structural model</li>
+</ul>
+
+</body>
+</html>

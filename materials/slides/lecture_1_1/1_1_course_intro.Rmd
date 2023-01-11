@@ -1,0 +1,635 @@
+---
+title: "AGEC 652 - Lecture 1.1"
+subtitle: "A course introduction"
+date: "Spring 2023"
+author: "Diego S. Cardoso"
+#institute: "Purdue University, Department of Agricultural Economics"
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    # self_contained: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: '16:9'
+---
+exclude: true
+```{r setup}
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(
+  JuliaCall, xaringanthemer
+)
+
+options(htmltools.dir.version = FALSE)
+
+knitr::opts_hooks$set(fig.callout = function(options) {
+  if (options$fig.callout) {
+    options$echo <- FALSE
+  }
+
+  knitr::opts_chunk$set(echo = TRUE, fig.align="center")
+  options
+})
+
+```
+
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_mono_accent(
+  base_color = "#8E6F3E", 
+  header_font_google = google_font("Josefin Sans"),
+  text_font_size = "28px",
+  colors = c(
+    red = "#f34213",
+    gold = "#CFB991",
+    gray = "CFB991",
+    blue = "#295fbe",
+    black = "#000000"
+  )
+)
+
+extra_css <- list(
+  ".small" = list("font-size" = "90%"),
+  ".big" = list("font-size" = "125%"),
+  ".footnote" = list("font-size" = "60%"), 
+  ".full-width" = list(
+    display = "flex",
+    width   = "100%",
+    flex    = "1 1 auto"
+  )
+)
+
+style_extra_css(css = extra_css)
+
+```
+
+
+```{julia}
+using Pkg
+Pkg.activate(".")
+Pkg.instantiate()
+Pkg.add("ForwardDiff"); Pkg.add("Distributions"); Pkg.add("Plots"); Pkg.add("BenchmarkTools")
+```
+
+---
+
+# Welcome to AGEC 652!
+
+- Formally: *Application of Quantitative Analysis: Mathematical Programming*
+
+--
+
+- Informally: **Computational methods for applied economics**
+
+
+---
+
+## What you will learn in this course
+
+1. How to setup and manage computational projects for your research
+
+--
+
+2. Understand why and when computational methods can help
+
+--
+
+3. And, most importantly, how to apply many techniques to solve economic problems using your computer
+
+---
+
+## What we will cover
+
+**3 parts**
+
+1. An introduction to Scientific Computing for Applied Economics
+
+2. Numerical methods to solve economic problems
+
+3. Structural estimation of static models
+
+--
+
+  - .blue[.small[We leave out dynamic models. Those you'll see in AGEC 654]]
+
+---
+
+## What we will cover: Part I
+
+*First 3 weeks*
+
+- Reproducibility
+
+- Version control (git) and project organization
+
+- Julia programming language
+
+---
+
+## What we will cover: Part II
+
+*Week 3 until 13*
+
+- Fundamentals of numerical methods
+  - Computer architecture and arithmetic
+  - Numerical differentiation and integration
+- Systems of equations
+  - Methods for linear and nonlinear systems
+  - Economic models and applications
+- Function approximation  
+  - Interpolation
+  - Functional equations
+- Optimization
+  - Methods for constrained and unconstrained
+  - Economic models and applications
+
+---
+
+## What we will cover: Part III
+
+*Weeks 13 to 15*
+
+- Introduction to structural estimation
+  - Structural vs. reduced-form
+  - Recap of MLE and GMM
+  - Estimation of models with a single agent
+  - Estimation of models with multiple (interacting) agents
+
+--
+
+.blue[.small[*Dates are tentative: This is a "new" course. Your feedback and understanding are appreciated.*]]
+
+---
+
+class: inverse, center, middle
+name:introductions
+
+# Let's stop here for a while and introduce ourselves!
+
+---
+
+## Course materials
+
+- Papers, articles, and tutorials 
+  - Links on *Brightspace > Content > Materials*
+- Lecture slides, coding examples 
+  - Links on *Brightspace > Content > Materials*
+  - Hosted on the GitHub class repository (more details to come)
+- Books
+  1. Miranda and Fackler (2002)
+  2. Judd (1998)
+  3. Nocedal and Wright (2006)
+  - .blue[.small[All available at Purdue Library, links on Brightspace]]
+  
+
+---
+
+
+## What you need to succeed in this course
+
+- AGEC 552 or ECON 615: matrix algebra and differential calculus. And some basic game theory.
+
+--
+
+- Previous coding experience or willingness to spend some time learning as you go
+
+- A laptop to use in class (come talk to me if you do not have one available)
+
+---
+
+## What you have to do
+
+- Come to class (unless unable)
+
+- **Try** solving in-class quick problems and labs and submit your work right after class
+
+- Solve Weekly Problems
+
+- Do a mini-project
+
+---
+
+## Grading
+
+- Here it gets a little more sophisticated than usual
+
+--
+
+- This course follows a modern approach called Standards-Based Grading
+  - It's a more appropriate way to assess skills like the ones you will learn in this course
+
+- You will need to demonstrate mastery over a pre-specified list of skills, or **learning standards**
+  - There is no averaging of scores across assignments
+
+--
+
+- This is different from the traditional way. Let's take a look together at the syllabus to understand it
+
+---
+
+## Course and University policies
+
+**Attendance**
+
+- We follow standard Purdue regulations on attendance. But things are still weird with COVID... 
+
+- If you must miss class for health or any other reason, please let me know as far in advance as possible by Purdue email
+
+- And please **take care of yourself, physically and mentally**
+  
+---
+
+## Course and University policies
+
+**Course evaluation**
+
+- There is the regular course evaluation by Purdue at the end of the semester
+
+- In addition, I will ask for your anonymous and voluntary opinion halfway through the course
+  - This is a new course with inevitable rough edges
+  - Your sincere feedback is appreciated and will help me deliver a better course for everyone
+  
+.red[Please read the syllabus for other policies]
+
+---
+
+
+## Office hours
+
+(From next week)
+
+- Mondays 11 AM to 12 PM
+
+- Wednesdays 1:30 PM to 2:30 PM (you have priority these days)
+
+- I will schedule a meeting room for office hours. Typically, I'll be there and you can pop in at anytime with your laptop for help with the course (or general programming questions)
+
+
+---
+
+Before we continue, some
+
+##.center[.blue[Acknowledgments]]
+
+.center[*These slides build on materials provided by Ivan Rudik (Cornell University) and on the textbooks and other sources referenced in the syllabus/reading list.*]
+
+---
+
+class: inverse, center, middle
+name: why
+
+# Why computational methods?
+
+
+---
+
+## Why do we need computational methods?
+
+Everything you've done so far has likely been solvable analytically
+
+Including OLS: $\hat{\beta} = (X'X)^{-1}X'Y$
+
+--
+
+.red[Not all economic models have closed-form solutions, and others can't have closed-form solutions with losing important economic content]
+
+
+---
+
+## What can we compute?
+
+We can use computation + theory to answer **quantitative** questions
+
+--
+
+Theory can't give us welfare in dollar terms
+
+Theory can't tell us the value of economic primitives
+
+
+---
+
+## What can we compute?
+
+Theory often relies on strong assumptions like:
+
+--
+
+- log utility (income loss vs substitution)
+- no transaction costs (important friction)
+- strictly concave objectives (natural phenomena don't follow this)
+- static decision-making
+
+It can be unclear what the cost of these assumptions are
+
+---
+
+class: inverse, center, middle
+# Some apparently simple questions
+
+---
+
+## Example 1
+
+Suppose we have a constant elasticity demand function: 
+
+$$q(p) = p^{-0.2}$$
+
+In equilibrium, quantity demanded is $q^* = 2$
+
+**Q: What price clears the market in equilibrium?**
+
+---
+
+## Example 1
+
+A: Just invert the demand function
+
+$$2 = p^{-0.2}$$
+
+--
+
+$$p^* = 2^{-5} \checkmark$$
+
+Your calculator can do the rest
+
+---
+
+## Example 2
+
+Suppose the demand function is now
+
+$$q(p) = 0.5p^{-0.2} + 0.5p^{-0.5},$$
+
+a weighted average of two CE demand functions
+
+In equilibrium, quantity demanded is $q^* = 2$
+
+**Q: What price clears the market in equilibrium?**
+
+--
+
+First, does a solution exist?
+
+--
+
+Yes, why?
+
+---
+
+## Example 2
+
+$q(p)$ is continuous and monotonically decreasing
+
+--
+
+$q(p)$ is greater than 2 at $p=0.1$ and less than 2 at $p=0.2$
+
+--
+
+$\Rightarrow$ by intermediate value theorem $q(p) = 2$ somewhere in $(0.1,0.2)$
+
+---
+
+## Example 2
+
+```{julia, results = 'hide'}
+# We know solution is between .1 and .2
+x = collect(range(.1, stop = .2, length = 10)) # generate evenly spaced grid
+q_d = ones(size(x)).*2 # generate equal length vector of qd=2
+
+# Define price function
+price(p) = p.^(-0.2)/2 .+ p.^(-0.5)/2
+
+# Get corresponding quantity values at these prices
+y = price(x)
+
+```
+
+Now plot $q_d$ and $q(p)$
+
+---
+
+## Example 2
+
+```{julia, echo = FALSE}
+using Plots
+plot(x, [y q_d],
+    linestyle = [:solid :dot],
+    linewidth = [3 3],
+    linecolor = [:red :blue],
+    tickfontsize = 12,
+    grid = :no,
+    xlabel = "p",
+    ylabel = "q(p)",
+    label = ["q(p)" "Quantity Demanded"])
+```
+
+
+---
+
+## Example 2
+
+Notice: if we let $t = p^{-0.1}$ then
+
+$$q(t) = 0.5t^2 + 0.5t^5$$
+
+--
+
+Can we solve for $t$ now?
+
+--
+
+No! Closed-form solutions to fifth order polynomials are not guaranteed to exist!
+
+--
+
+So how do we solve the problem?
+
+---
+
+## Newton's method
+
+Iteratively do the following:
+1. Guess solution to: $q(p) - q^* = 0 \Rightarrow q(p) - 2 = 0$
+2. Approximate the function with local 2nd-order polynomial around guess
+3. Solve this easier equation
+4. Solution is the new guess
+5. Stop if previous guess and new guess are sufficiently close
+
+We will learn more about this and why it works in a later class
+
+---
+
+## Coding Newton's method
+
+```{julia, results = 'hide'}
+# Define demand functions
+demand(p) = p^(-0.2)/2 + p^(-0.5)/2 - 2     # demanded quantity minus target
+demand_grad(p) = .1*p^(-1.2) + .25*p^(-1.5) # demand gradient
+```
+
+--
+
+```{julia, results = 'hide'}
+function find_root_newton(demand, demand_grad)
+    p = .3        # initial guess
+    deltap = 1e10 # initialize stepsize
+
+    while abs(deltap) > 1e-4
+        deltap = demand(p)/demand_grad(p)
+        p += deltap
+        println("Intermediate guess of p = $(round(p,digits=3)).")
+    end
+    println("The solution is p = $(round(p,digits=3)).")
+    return p
+end;
+```
+
+---
+
+## Newton code
+
+```{julia}
+# Solve for price
+find_root_newton(demand, demand_grad)
+```
+
+---
+
+## Example 3
+
+Consider a two period ag commodity market model
+
+- Period 1: Farmer makes acreage decisions for planting  
+- Period 2: Per-acre yield realizes, equilibrium crop price clears the market
+
+--
+
+The farmer's policy function is: 
+
+$$a(E[p]) = \frac{1}{2} + \frac{1}{2}E[p]$$
+
+---
+
+## Example 3
+
+Yield $\hat{y}$ is stochastic and only realized after planting period. It follows $\hat{y} \sim \mathcal{N}(1, 0.1)$
+
+
+Crop production is 
+
+$$q = a\hat{y}$$
+
+--
+
+Demand is given by 
+
+$$p(q) = 3-2q$$
+
+--
+
+**Q: How many acres get planted?**
+
+---
+
+## Example 3
+
+**Q: How many acres get planted?**
+
+A: We plug in the stochastic quantity and take expectations
+
+$p(\hat{y}) = 3-2a\hat{y}$
+
+--
+
+$a = \frac{1}{2} + \frac{1}{2}(3-2aE[\hat{y}])$
+
+--
+
+Rearrange and solve:
+
+$a^* = 1$
+
+---
+
+## Example 3
+
+Now suppose the government implements a price floor such that $p > 1$. 
+
+We now have that 
+
+$$p(\hat{y}) = \max(1,3-2a\hat{y})$$
+
+**Q: How many acres get planted with a price floor?**
+
+---
+
+## Example 3
+
+**Q: How many acres get planted with a price floor?**
+
+This is analytically intractable
+
+--
+
+The max operator is non-linear so we can't pass the expectation through
+
+$E[\max(1,3-2a\hat{y})] \neq \max(1,E[3-2a\hat{y}])$
+
+--
+
+**We need to solve this numerically**
+
+---
+
+## Function iteration
+
+.small[We can solve this using a technique called **function iteration**]
+
+```{julia, results = 'hide'}
+# Function iteration method to find a root
+function find_root_fi(mn, variance)
+
+    y = randn(1000)*sqrt(variance) .+ mn # draws of the random variable
+    a = 1.                               # initial guess
+    differ = 100.                        # initialize error
+    exp_price = 1.                       # initialize expected price
+
+    while differ > 1e-4
+        a_old = a                      # save old acreage
+        p = max.(1, 3 .- 2 .*a.*y)     # compute price at all distribution points
+        exp_price = mean(p)            # compute expected price
+        a = 1/2 + 1/2*exp_price        # get new acreage planted given new price
+        differ= abs(a - a_old)         # change in acreage planted
+        println("Intermediate acreage guess: $(round(a,digits=3))")
+    end
+
+    return a, exp_price
+end
+```
+
+---
+
+## Function iteration
+
+```{julia}
+acreage, expected_price = find_root_fi(1, 0.1)
+println("The optimal number of acres to plant is $(round(acreage, digits = 3)).\nThe expected price is $(round(expected_price, digits = 3)).")
+```
+
+---
+
+# Don't leave just yet!
+
+**Things to do before next class**
+
+1. Read Gentzkow and Shapiro (2014) *Code and Data for the Social Sciences*
+2. Watch the 5-minute video *What is version control?*
+  - .small[.blue[Links for both are on Brightspace > Content > Materials]]
+
+3. Create a GitHub account with your Purdue email (or add it to your existing account)
+4. Install [GitHub Desktop](https://desktop.github.com/)
+
