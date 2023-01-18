@@ -1141,4 +1141,72 @@ name: faq
 
 ## Submitting your work
 
-- More details to come
+- To help you get familiarized with GitHub workflow, all your submitted work will be done on a repository
+- After you accept an invitation from GitHub Classroom, it will create a new private repository
+  - Only you and Diego will be able to see its content
+--
+
+- GitHub will automatically create a *pull request* called **Feedback**
+  - This is where I'll write any feedback I might have for your files
+  - **Please do not close or merge this pull request. Leave it open for the rest of the semester**
+
+---
+
+## Submitting your work
+
+
+Let's try it
+
+- Type or click on the link below. It's an invitation for a tutorial repository
+
+[https://classroom.github.com/a/IECLK9zM](https://classroom.github.com/a/IECLK9zM)
+
+
+---
+
+## Submitting your work
+
+I will send you an invitation to create a *Code portfolio* on GitHub. After accept it, the structure will be this
+
+<div style="float: right">
+  <img src="figures/portfolio_structure.png" height=430>
+</div>
+
+Naming conventions for:
+- In-class activities: `2023MMDD.jl`
+  - After class, save what you typed and commit
+- Weekly problems: `weekly_problem_N.jl`
+  - Commit the last version of the file before the submission deadline
+- Mini-project
+  - Include here all files relative to your project
+  
+Note that folder `etc` is grayed out. That's because it's in `.gitignore`
+
+
+---
+
+## Submitting your work
+
+This is what the **Feedback** pull request page will look like after your first commit
+
+<div align = "center">
+  <img src="figures/test_ps_3.png" height=430>
+</div>
+
+
+---
+
+
+#.blue[Next class]
+
+We'll start programming in Julia language
+
+**Before next class, please:** follow [these instructions](https://www.julia-vscode.org/docs/dev/gettingstarted/) to install Julia and Visual Studio (VS) code on your laptop
+
+--
+
+  - We won't cover it, but you might also be interested in learning more about *Jupyter* and programming using code notebooks
+    - They allow you to write formatted text along with code blocks and render graphics in the same document
+  - You can learn more about *Jupyter* [here](https://julia.quantecon.org/getting_started_julia/getting_started.html)
+    - And check out the video "IDE showcase: VS Code and Jupyter" I posted Brightspace materials for this unit
+
