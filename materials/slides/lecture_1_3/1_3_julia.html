@@ -1,0 +1,1569 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>AGEC 652 - Lecture 1.3</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Diego S. Cardoso" />
+    <script src="1_3_julia_files/header-attrs-2.19/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# AGEC 652 - Lecture 1.3
+]
+.subtitle[
+## An introduction to Julia
+]
+.author[
+### Diego S. Cardoso
+]
+.date[
+### Spring 2023
+]
+
+---
+
+exclude: true
+
+```r
+if (!require("pacman")) install.packages("pacman")
+```
+
+```
+## Loading required package: pacman
+```
+
+```r
+pacman::p_load(
+  xaringanthemer, JuliaCall
+)
+
+#options(htmltools.dir.version = FALSE)
+
+knitr::opts_hooks$set(fig.callout = function(options) {
+  if (options$fig.callout) {
+    options$echo &lt;- FALSE
+  }
+
+  knitr::opts_chunk$set(echo = TRUE, fig.align="center")
+  options
+})
+```
+
+
+
+
+```julia
+using Pkg
+Pkg.activate(".")
+Pkg.instantiate()
+Pkg.add("BenchmarkTools")
+```
+
+
+
+---
+
+## Software requirements
+
+By now you hopefully have installed
+- Julia
+
+- Visual Studio Code with Julia extension
+- Jupyter
+  - We will take a quick look on how to use VS Code and Jupyter
+
+
+---
+
+class: inverse, center, middle
+
+# Programming with Julia
+
+.footnote[\*These slides are based on Software Carpentry, notes by Ivan Rudik and Grant Mcdermott, QuantEcon, and Julia documentation.]
+
+---
+
+## Why learn Julia?
+
+**Reason 1: It is easy to learn and use**
+
+Julia is a *high-level* language
+- Low-level = you write instructions are closer to what the hardware understands (Assembly, C++, Fortran)
+  - .small[E.g.: ]
+  - .small[These are usually the fastest because there is little to translate (what a compiler does) and you can optimize your code depending on your hardware]
+- High-level means you write in closer to human language (Julia, R, Python)
+  - .small[The compiler has to do a lot more work to translate your instructions]
+
+---
+
+## Why learn Julia?
+
+**Reason 2: Julia delivers C++ and Fortran speed**
+
+.small[Sounds like magic, but it's just a clever combination of design choices targeting numerical methods]
+
+&lt;div align="center"&gt;
+  &lt;img src="figures/julia_speed_2.png" height=300&gt;
+&lt;/div&gt;
+
+.center[.footnote[*In this graph, time to execute in C++ is 1]]
+
+---
+
+## Why learn Julia?
+
+**Reason 3: Julia is free, open-source, and popular**
+
+- You don't need expensive licenses to use (unlike Matlab)
+
+- The people who want to use or verify what you did also don't have to pay
+
+- There is a large and active community of users and developers
+  - So it's easy to get help and new packages
+
+
+---
+
+## Tools for programming in Julia
+
+There are 2 *Integrated Development Environments (IDEs)* I generally recommend
+
+1. Visual Studio (VS) code
+2. Jupyter Lab notebooks
+
+.blue[Please watch the "IDE showcase" video on Brightspace for an intro]
+
+--
+
+In this course, we will only program plain `.jl` files, so I highly recommend you get familiarized with VS code
+
+---
+
+
+## Intro to programming
+
+### Programming `\(\equiv\)` writing a set of instructions
+
+- There are hard rules you can't break if you want your code to work
+
+--
+
+- There are elements of style (e.g. Strunk and White) that make your code easier to read, modify, and maintain
+
+--
+
+- There are elements that make your code more efficient
+  - Using less time or space (memory)
+
+
+---
+
+## Intro to programming
+
+If you will be doing computational work, there are:
+
+1. Language-independent coding basics you should know
+    - Arrays are stored in memory in particular ways
+    
+2. Language-independent best practices you should use
+    - Indent to convey program structure, naming conventions
+    
+3. Language-dependent idiosyncracies that matter for function, speed, etc
+    - Julia: type stability; R: vectorize
+
+---
+
+## Intro to programming
+
+Learning these early will:
+
+1. Make coding a lot easier
+--
+
+2. Reduce total programmer time
+--
+
+3. Reduce total computer time
+--
+
+4. Make your code understandable by someone else or your future self
+--
+
+5. Make your code flexible
+
+---
+
+## A broad view of programming
+
+Your goal is to make a **program**
+
+A program is made of different components and sub-components
+
+--
+
+The most basic component is a **statement**, more commonly called a **line of code**
+
+
+---
+
+## A broad view of programming
+
+Here is an example of a pseudoprogram:
+
+```julia
+*deck = ["4 of hearts", "King of clubs", "Ace of spades"]
+shuffled_deck = shuffle(deck)
+first_card = shuffled_deck[1]
+println("The first drawn card was " * shuffled_deck ".")
+```
+
+This program is very simple:
+
+1. Create a deck of cards
+
+---
+
+## A broad view of programming
+
+Here is an example of a pseudoprogram:
+
+```julia
+deck = ["4 of hearts", "King of clubs", "Ace of spades"]
+*shuffled_deck = shuffle(deck)
+first_card = shuffled_deck[1]
+println("The first drawn card was " * shuffled_deck ".")
+```
+
+This program is very simple:
+1. Create a deck of cards
+2. Shuffle the deck
+
+---
+
+## A broad view of programming
+
+Here is an example of a pseudoprogram:
+
+```julia
+deck = ["4 of hearts", "King of clubs", "Ace of spades"]
+shuffled_deck = shuffle(deck)
+*first_card = shuffled_deck[1]
+println("The first drawn card was " * shuffled_deck ".")
+```
+
+This program is very simple:
+1. Create a deck of cards
+2. Shuffle the deck
+3. Draw the top card
+
+---
+
+## A broad view of programming
+
+Here is an example of a pseudoprogram:
+
+```julia
+deck = ["4 of hearts", "King of clubs", "Ace of spades"]
+shuffled_deck = shuffle(deck)
+first_card = shuffled_deck[1]
+*println("The first drawn card was " * shuffled_deck ".")
+```
+
+This program is very simple:
+1. Create a deck of cards
+2. Shuffle the deck
+3. Draw the top card
+4. Print it
+
+---
+
+## A broad view of programming
+
+```julia
+deck = ["4 of hearts", "King of clubs", "Ace of spades"]
+shuffled_deck = shuffle(deck)
+first_card = shuffled_deck[1]
+println("The first drawn card was " * shuffled_deck ".")
+```
+
+What are the parentheses and why are they different from square brackets?
+
+How does shuffle work?
+
+What’s `println`?
+
+It’s important to know that a **good program has understandable code**
+
+---
+
+## Julia specifics
+
+We will discuss coding in the context of Julia
+but a lot of this ports to Python, MATLAB, etc&lt;sup&gt;1&lt;/sup&gt;
+
+We will review
+
+1. Types
+2. Iterating
+3. Broadcasting/vectorization
+4. Scope
+5. Generic functions
+6. Multiple dispatch
+
+
+.footnote[&lt;sup&gt;1&lt;/sup&gt;See [https://cheatsheets.quantecon.org](https://cheatsheets.quantecon.org)]
+
+---
+
+class: inverse, center, middle
+
+# 1. Types
+
+---
+
+## Types: boolean
+
+All languages have some kind of **variable types** like *integers* or *arrays*
+
+--
+
+The first type you will often use is a boolean (`Bool`) variable that takes on a value of `true` or `false`:
+
+```julia
+x = true
+```
+
+```
+## true
+```
+
+```julia
+typeof(x)
+```
+
+```
+## Bool
+```
+
+---
+
+## Types: boolean
+
+We can save the boolean value of actual statements in variables this way:
+
+```julia
+@show y = 1 &gt; 2
+```
+
+```
+## y = 1 &gt; 2 = false
+```
+
+```
+## false
+```
+
+`@show` is a Julia macro for showing the operation. 
+- .small[You can think of a macro as a shortcut name that calls a bunch of other things to run]
+
+---
+
+## Quick detour: logical operators
+
+Logical operators work like you'd think
+
+`==` (equal equal) tests for equality
+
+
+```julia
+1 == 1
+```
+
+```
+## true
+```
+
+--
+
+`!=` (exclaimation point equal) tests for inequality
+
+
+```julia
+2 != 2
+```
+
+```
+## false
+```
+
+---
+
+## Quick detour: logical operators
+
+
+You can also test for approximate equality with `\(\approx\)` (type `\approx&lt;TAB&gt;`)
+
+
+
+```julia
+1.00000001 ≈ 1
+```
+
+```
+## true
+```
+
+--
+
+Now back to types
+
+---
+
+## Types: numbers
+
+Two other data types you will use frequently are integers
+
+```julia
+typeof(1)
+```
+
+```
+## Int64
+```
+
+--
+
+and floating point numbers
+
+```julia
+typeof(1.0)
+```
+
+```
+## Float64
+```
+
+- .small[64 means 64 bits of storage for the number, which is probably the default on your machine]
+
+---
+
+## Types: numbers
+
+You can always instantiate alternative floating point number types
+
+
+```julia
+converted_int = convert(Float32, 1.0);
+typeof(converted_int)
+```
+
+```
+## Float32
+```
+
+---
+
+## Types: numbers
+
+### Math works like you would expect:
+
+```julia
+a = 2
+```
+
+```
+## 2
+```
+
+```julia
+b = 1.0
+```
+
+```
+## 1.0
+```
+
+```julia
+a * b
+```
+
+```
+## 2.0
+```
+
+--
+
+
+```julia
+a^2
+```
+
+```
+## 4
+```
+
+---
+
+## Types: numbers
+
+
+```julia
+2a - 4b
+```
+
+```
+## 0.0
+```
+
+--
+
+
+```julia
+@show 4a + 3b^2
+```
+
+```
+## 4a + 3 * b ^ 2 = 11.0
+```
+
+```
+## 11.0
+```
+
+--
+
+.blue[In Julia, you dont need `*` in between numeric literals (numbers) and variables]
+
+---
+
+## Types: strings
+
+Strings store sequences of characters
+
+You implement them with double quotations:
+
+
+```julia
+x = "Hello World!";
+typeof(x)
+```
+
+```
+## String
+```
+
+--
+
+.blue[Note that `;` is used to suppress output for that line of code. Unlike some other languages, in Julia you don't need to add `;` after every command]
+
+---
+
+## Types: strings
+
+It's easy to work with strings. Use `$` to interpolate a variable/expression
+
+```julia
+x = 10; y = 20; println("x + y =  $(x+y).")
+```
+
+```
+## x + y =  30.
+```
+
+--
+
+Use `*` to concatenate strings
+
+```julia
+a = "Aww"; b = "Yeah!!!"; println(a * " " * b)
+```
+
+```
+## Aww Yeah!!!
+```
+
+--
+
+You probably won't use strings too often unless you're working with text data or printing output. 
+--
+.blue[Note that `;` can also be used to type multiple commands in the same line. I'm doing it make it fit in this slide, but you should avoid it]
+
+
+---
+
+## Types: containers
+
+Containers are types that store collections of data
+
+--
+
+The most basic container is the `Array` which is denoted by square brackets
+
+--
+
+
+
+```julia
+a1 = [1 2; 3 4]; typeof(a1)
+```
+
+```
+## Matrix{Int64} (alias for Array{Int64, 2})
+```
+
+--
+
+Arrays are **mutable**, which means you can change their values
+
+--
+
+
+```julia
+a1[1,1] = 5; a1
+```
+
+```
+## 2×2 Matrix{Int64}:
+##  5  2
+##  3  4
+```
+
+You reference elements in a container with square brackets
+
+---
+
+## Types: containers
+
+An alternative to the `Array` is the `Tuple`, which is denoted by parentheses
+
+--
+
+
+```julia
+a2 = (1, 2, 3, 4); typeof(a2)
+```
+
+```
+## NTuple{4, Int64}
+```
+`a2` is a `Tuple` of 4 `Int64`s. Tuples have no dimension
+
+---
+
+## Types: containers
+
+Tuples are **immutable** which means you **can't** change their values
+
+```julia
+try
+  a2[1,1] = 5;
+catch
+  println("Error, can't change value of a tuple.")
+end
+```
+
+```
+## Error, can't change value of a tuple.
+```
+
+---
+
+## Types: containers
+
+Tuples don't need parentheses (but it's probably best practice for clarity)
+
+```julia
+a3 = 5, 6; typeof(a3)
+```
+
+```
+## Tuple{Int64, Int64}
+```
+
+---
+
+## Types: containers
+
+Tuples can be **unpacked** 
+
+--
+
+
+```julia
+a3_x, a3_y = a3;
+a3_x
+```
+
+```
+## 5
+```
+
+```julia
+a3_y
+```
+
+```
+## 6
+```
+
+--
+
+This is basically how functions return output when you call them
+
+---
+
+## Types: containers
+
+But an alternative and more efficient container is the  [`NamedTuple`](https://docs.julialang.org/en/v1/manual/types/#Named-Tuple-Types-1) 
+
+
+```julia
+nt = (x = 10, y = 11); typeof(nt)
+```
+
+```
+## NamedTuple{(:x, :y), Tuple{Int64, Int64}}
+```
+
+```julia
+nt.x
+```
+
+```
+## 10
+```
+
+```julia
+nt.y
+```
+
+```
+## 11
+```
+
+Another way of accessing `x` and `y` inside the NamedTuple is
+
+
+```julia
+nt[:x]; nt[:y];
+```
+
+
+---
+
+## Types: containers
+
+A `Dictionary` is the last main container type. They are like arrays but are indexed by keys (names) instead of numbers
+
+--
+
+
+```julia
+d1 = Dict("class" =&gt; "AAAA999", "grade" =&gt; 97);
+typeof(d1)
+```
+
+```
+## Dict{String, Any}
+```
+
+--
+
+`d1` is a dictionary where the key are strings and the values are any kind of type
+
+---
+
+## Types: containers
+
+Reference specific values you want in the dictionary by referencing the key
+
+--
+
+
+```julia
+d1["class"]
+```
+
+```
+## "AAAA999"
+```
+
+```julia
+d1["grade"]
+```
+
+```
+## 97
+```
+
+---
+
+## Types: containers
+
+If you just want all the keys or all the values, you can use these base functions
+
+
+```julia
+keys_d1 = keys(d1)
+```
+
+```
+## KeySet for a Dict{String, Any} with 2 entries. Keys:
+##   "class"
+##   "grade"
+```
+
+```julia
+values_d1 = values(d1)
+```
+
+```
+## ValueIterator for a Dict{String, Any} with 2 entries. Values:
+##   "AAAA999"
+##   97
+```
+
+---
+
+class: inverse, center, middle
+
+# 2. Iteration
+
+---
+
+## Iterating
+
+As in other languages we have loops at our disposal:
+
+`for` loops iterate over containers
+
+```julia
+for count in 1:10
+  random_number = rand()
+  if random_number &gt; 0.2
+    println("We drew a $random_number.")
+  end
+end
+```
+
+```
+## We drew a 0.3992300760513675.
+## We drew a 0.3391290761331104.
+## We drew a 0.49526015589632133.
+## We drew a 0.499759974081467.
+## We drew a 0.9521199836268367.
+```
+
+---
+
+## Iterating
+
+`while` loops iterate until a logical expression is false
+
+```julia
+while rand() &gt; 0.5
+  random_number = rand()
+  if random_number &gt; 0.2
+    println("We drew a $random_number.")
+  end
+end
+```
+
+---
+
+## Iterating
+
+An `Iterable` is something you can loop over, like arrays
+
+--
+
+
+```julia
+actions = ["codes well", "skips class"];
+for action in actions
+    println("Charlie $action")
+end
+```
+
+```
+## Charlie codes well
+## Charlie skips class
+```
+
+---
+
+## Iterating
+
+The type `Iterator` is a particularly convenient subset of Iterables
+
+--
+
+These include things like the dictionary keys:
+
+```julia
+for key in keys(d1)
+  println(d1[key])
+end
+```
+
+```
+## AAAA999
+## 97
+```
+
+---
+
+## Iterating
+
+Iterating on `Iterator`s is more *memory efficient* than iterating on arrays
+
+--
+
+Here's a **very** simple example. The top function iterates on an `Array`, the bottom function iterates on an `Iterator`:
+
+--
+
+
+```julia
+function show_array_speed()
+  m = 1
+  for i = [1, 2, 3, 4, 5, 6]
+    m = m*i
+  end
+end;
+
+function show_iterator_speed()
+  m = 1
+  for i = 1:6
+    m = m*i
+  end
+end;
+```
+
+---
+
+## Iterating
+
+
+
+```julia
+using BenchmarkTools
+@btime show_array_speed()
+```
+
+```
+##   19.839 ns (1 allocation: 112 bytes)
+```
+
+```julia
+@btime show_iterator_speed()
+```
+
+```
+##   1.500 ns (0 allocations: 0 bytes)
+```
+
+The `Iterator` approach is faster and allocates no memory
+
+`@btime` is a macro from `BenchmarkTools` that shows you the elasped time and memory allocation
+
+---
+
+## Neat looping
+
+A nice thing about Julia vs MATLAB: your loops can be much neater because you don't need to index when you just want the container elements
+
+--
+
+
+```julia
+f(x) = x^2;
+x_values = 0:20:100;
+for x in x_values
+  println(f(x))
+end
+```
+
+```
+## 0
+## 400
+## 1600
+## 3600
+## 6400
+## 10000
+```
+
+---
+
+## Neat looping
+
+This loop directly assigns the elements of `x_values` to `x` instead of having to do something clumsy like `x_values[i]`
+
+--
+
+`0:20:100` creates something called a `StepRange` (a type of `Iterator`) which starts at `0`, steps up by `20` and ends at `100`
+
+
+---
+
+## Neat looping
+
+You can also pull out an index and the element value by enumerating
+
+
+```julia
+f(x) = x^2;
+x_values = 0:20:100;
+for (index, x) in enumerate(x_values)
+  println("f(x) at value $index is $(f(x)).")
+end
+```
+
+```
+## f(x) at value 1 is 0.
+## f(x) at value 2 is 400.
+## f(x) at value 3 is 1600.
+## f(x) at value 4 is 3600.
+## f(x) at value 5 is 6400.
+## f(x) at value 6 is 10000.
+```
+
+`enumerate` basically assigns an index vector
+
+---
+
+## Neat looping
+
+There is also a lot of Python-esque functionality to loop without indexes
+
+For example: `zip` lets you loop over multiple different iterables at once
+
+--
+
+
+```julia
+last_name = ("Lincoln", "Bond", "Walras");
+first_name = ("Abraham", "James", "Leon");
+
+for (first_idx, last_idx) in zip(first_name, last_name)
+  println("The name's $last_idx, $first_idx $last_idx.")
+end
+```
+
+```
+## The name's Lincoln, Abraham Lincoln.
+## The name's Bond, James Bond.
+## The name's Walras, Leon Walras.
+```
+
+---
+
+## Neat looping
+
+Nested loops can also be made very neatly
+
+--
+
+
+```julia
+for x in 1:3, y in 3:-1:1
+  println("$x minus $y is $(x-y)")
+end
+```
+
+```
+## 1 minus 3 is -2
+## 1 minus 2 is -1
+## 1 minus 1 is 0
+## 2 minus 3 is -1
+## 2 minus 2 is 0
+## 2 minus 1 is 1
+## 3 minus 3 is 0
+## 3 minus 2 is 1
+## 3 minus 1 is 2
+```
+
+--
+
+The first loop is the *outer* loop, the second loop is the *inner* loop
+
+---
+
+## Comprehensions: the neatest looping
+
+Comprehensions are an elegant way to use iterables that makes your code cleaner and more compact
+
+--
+
+
+```julia
+squared = [y^2 for y in 1:2:11]
+```
+
+```
+## 6-element Vector{Int64}:
+##    1
+##    9
+##   25
+##   49
+##   81
+##  121
+```
+
+This created a 1-dimension `Array` using one line
+
+---
+
+## Comprehensions: the neatest looping
+
+We can also use nested loops for comprehensions
+
+--
+
+
+```julia
+squared_2 = [(y+z)^2 for y in 1:2:11, z in 1:6]
+```
+
+```
+## 6×6 Matrix{Int64}:
+##    4    9   16   25   36   49
+##   16   25   36   49   64   81
+##   36   49   64   81  100  121
+##   64   81  100  121  144  169
+##  100  121  144  169  196  225
+##  144  169  196  225  256  289
+```
+
+This created a 2-dimensional `Array`
+
+--
+
+Use this (and the compact nested loop) sparingly since it's hard to follow
+
+---
+
+class: inverse, center, middle
+
+# 3. Broadcating/Vectorization
+
+---
+
+## Vectorization
+
+Iterated operations element by element is usually an inefficient approach
+
+Another way is to do operations over an entire array. This is called **vectorization**
+
+&lt;div style="float: right"&gt;
+  &lt;img src="figures/vectorization.png" height=250&gt;
+&lt;/div&gt;
+
+- .small[It's faster because your processor can do some operations over multiple values with one instruction]
+- .small[We'll get a better idea next lecture when we review the basics of computer architecture]
+
+
+---
+
+## Dot syntax: broadcasting/vectorization
+
+Vectorizing operations is easy in Julia: just use *dot syntax* (like in MATLAB)
+
+--
+
+
+```julia
+g(x) = x^2;
+squared_2 = g.(1:2:11)
+```
+
+```
+## 6-element Vector{Int64}:
+##    1
+##    9
+##   25
+##   49
+##   81
+##  121
+```
+
+--
+
+This is actually called **broadcasting** in Julia
+
+
+---
+
+## Dot syntax: broadcasting/vectorization
+
+When broadcasting, you might want to consider **pre-allocating** arrays
+
+Vectorization creates *temporary allocations*: temporary arrays in the middle of the process that aren't actually needed for the final product
+
+Julia can do broadcasting in a nicer, faster way by .hi-blue[fusing] operations together and avoiding these temporary allocations
+
+---
+
+## Dot syntax: broadcasting/vectorization
+
+Let's write two functions that do the same thing:
+
+
+```julia
+function show_vec_speed(x)
+  out = [3x.^2 + 4x + 7x.^3 for i = 1:1]
+end
+function show_fuse_speed(x)
+  out = @. [3x.^2 + 4x + 7x.^3 for i = 1:1]
+end
+```
+
+- The top one is just a normal, non-vectorized call
+- The `@.` in the bottom one vectorizes everything in one swoop: the function call, the operation, and the assignment to a variable
+
+---
+
+## Dot syntax: broadcasting/vectorization
+
+First, precompile&lt;sup&gt;.blue[\*]&lt;/sup&gt; the functions
+
+
+```julia
+x = rand(10^6);
+show_vec_speed(x);
+show_fuse_speed(x);
+```
+
+.footnote[.blue[\* *Just-in-time compilation* (JIT) is one of the tricks Julia does to make things run faster.] It translates your code to processor language the first time you run it and uses the translated version every time you call it again. Here, we run the functions once so that compiling doesn't add to our measure of running time in the next slide.]
+
+---
+
+## Dot syntax: broadcasting/vectorization
+
+Then, let's run and time it
+
+
+```julia
+@btime show_vec_speed(x)
+```
+
+```
+##   8.861 ms (13 allocations: 45.78 MiB)
+```
+
+```
+## 1-element Vector{Vector{Float64}}:
+##  [9.282893792677795, 5.169834301176777, 4.868987555025861, 5.881451958154961, 2.935292569617284, 2.0575050985893357, 2.7692144150183102, 8.799227952992604, 4.973052691193703, 1.2964281268900077  …  13.355952850779875, 1.8740178906449314, 9.648685224072809, 2.630440145669418, 13.72641145360237, 0.27909745753188564, 1.7512013113131062, 2.3180585376341547, 0.5713830327991521, 7.97969409931498]
+```
+
+```julia
+@btime show_fuse_speed(x)
+```
+
+```
+##   1.410 ms (3 allocations: 7.63 MiB)
+```
+
+```
+## 1-element Vector{Vector{Float64}}:
+##  [9.282893792677795, 5.169834301176777, 4.868987555025861, 5.881451958154961, 2.935292569617284, 2.0575050985893357, 2.7692144150183102, 8.799227952992604, 4.973052691193703, 1.2964281268900077  …  13.355952850779875, 1.8740178906449314, 9.648685224072809, 2.630440145669418, 13.72641145360237, 0.27909745753188564, 1.7512013113131062, 2.3180585376341547, 0.5713830327991521, 7.97969409931498]
+```
+
+Full vectorization using `@.` is about 5--10x faster with 1/6 of the memory allocation
+
+---
+
+## Dot syntax: broadcasting/vectorization
+
+Let's see another example
+
+
+```julia
+h(y,z) = y^2 + sin(z); # function to evaluate
+y = 1:2:1e6+1;         # input y
+z = rand(length(y));   # input z
+```
+
+---
+
+## Dot syntax: broadcasting/vectorization
+
+Here we are vectorizing the *function call* only
+
+
+```julia
+# precompile h 
+h_out_1 = h.(y,z);
+```
+
+
+```julia
+@btime h_out_1 = h.(y,z) # evaluate h.(y,z) and measure time
+```
+
+```
+##   3.367 ms (4 allocations: 3.81 MiB)
+```
+
+```
+## 500001-element Vector{Float64}:
+##    1.438885624615553
+##    9.374381795578778
+##   25.24256316132799
+##   49.029131866690456
+##   81.07634639168866
+##  121.02665746441735
+##  169.28573504874316
+##  225.12929286556135
+##  289.14928739649616
+##  361.0638587056878
+##    ⋮
+##    9.999700002255039e11
+##    9.999740001693086e11
+##    9.999780001218284e11
+##    9.999820000812128e11
+##    9.999860000497689e11
+##    9.999900000258402e11
+##    9.999940000092377e11
+##    9.999980000011926e11
+##    1.0000020000014592e12
+```
+
+---
+## Dot syntax: broadcasting/vectorization
+
+Here we are vectorizing the *function call* **and** *assignment*. With pre-allocated memory and vectorized assignment, we get an additional performance gain
+
+
+```julia
+h_out_2 = similar(h_out_1) # This pre-allocates memory for an object of the same type and size
+```
+
+
+```julia
+@btime h_out_2 .= h.(y,z)
+```
+
+```
+##   2.962 ms (2 allocations: 128 bytes)
+```
+
+```
+## 500001-element Vector{Float64}:
+##    1.438885624615553
+##    9.374381795578778
+##   25.24256316132799
+##   49.029131866690456
+##   81.07634639168866
+##  121.02665746441735
+##  169.28573504874316
+##  225.12929286556135
+##  289.14928739649616
+##  361.0638587056878
+##    ⋮
+##    9.999700002255039e11
+##    9.999740001693086e11
+##    9.999780001218284e11
+##    9.999820000812128e11
+##    9.999860000497689e11
+##    9.999900000258402e11
+##    9.999940000092377e11
+##    9.999980000011926e11
+##    1.0000020000014592e12
+```
+
+---
+## Dot syntax: broadcasting/vectorization
+
+Here we are again vectorizing the *function call* **and** *assignment*. But the `@.` syntax helps us write clear code because we only need to use it once instead of adding `.`'s everywhere
+
+
+
+```julia
+h_out_3 = similar(h_out_1)
+```
+
+```julia
+@btime @. h_out_3 = h(y,z)
+```
+
+```
+##   2.918 ms (2 allocations: 128 bytes)
+```
+
+```
+## 500001-element Vector{Float64}:
+##    1.438885624615553
+##    9.374381795578778
+##   25.24256316132799
+##   49.029131866690456
+##   81.07634639168866
+##  121.02665746441735
+##  169.28573504874316
+##  225.12929286556135
+##  289.14928739649616
+##  361.0638587056878
+##    ⋮
+##    9.999700002255039e11
+##    9.999740001693086e11
+##    9.999780001218284e11
+##    9.999820000812128e11
+##    9.999860000497689e11
+##    9.999900000258402e11
+##    9.999940000092377e11
+##    9.999980000011926e11
+##    1.0000020000014592e12
+```
+
+---
+
+class: inverse, center, middle
+
+# 4. Scope
+
+---
+
+## Scope
+
+TBA
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
