@@ -146,6 +146,11 @@ There are 2 *Integrated Development Environments (IDEs)* I generally recommend
 
 In this course, we will only program plain `.jl` files, so I highly recommend you get familiarized with VS code
 
+--
+
+- At the end of this unit, we will talk about using AI tools to help you learn to code and become a more productive programmer
+  - BUT **PLEASE PLEASE**, DON'T USE AI TOOLS YET
+
 ---
 
 
@@ -1015,4 +1020,211 @@ class: inverse, center, middle
 
 ## Scope
 
-TBA
+
+The **scope** of a variable name determines when it is valid to refer to that variable
+  - E.g.: if you create a variable inside a function, can you reference that variable outside the function?
+  - You can think of scope as different contexts within your program
+
+--
+  
+The two basic scopes are **local** and **global**
+
+--
+
+Scope can be a frustrating concept to grasp at first. But understanding how scopes work can save you a lot of debugging time
+
+--
+
+Let's walk through some simple examples to see how it works
+
+---
+
+## Scope
+
+First, functions have their own **local scope**
+
+--
+
+```{julia}
+ff(xx) = xx^2;
+yy = 5;
+ff(yy)
+```
+
+`xx` isn't bound to any values outside the function `ff`
+- It is only used inside the function
+
+
+---
+## Scope
+
+Locally scoped functions allow us to do things like:
+
+```{julia}
+xx = 10;
+fff(xx) = xx^2;
+fff(5)
+```
+
+--
+
+Although `xx` was declared equal to 10 *outside the function*, the function still evaluated `xx` within its own scope at 5 (the value passed as argument)
+
+---
+
+## Scope
+
+But, this type of scoping also has (initially) counterintuitive results like:
+
+```{julia}
+zz = 0;
+for ii = 1:10
+  zz = ii
+end
+println("zz = $zz")
+```
+
+--
+
+#### What happened?
+
+---
+
+## Scope
+
+#### What happened?
+
+The `zz` *outside* the for loop has a different scope: it's in the **global scope**
+
+--
+
+The global scope is the outermost scope, outside all functions and loops
+
+--
+
+The `zz` *inside* the for loop has a scope *local* to the loop
+
+--
+
+Since the outside `zz` has global scope, the locally scoped variables in the loop can't change it
+
+---
+
+## Scope
+
+But hold on. If you copy and paste the previous code and run it in REPL, it will actually return 10, not 0. $^{*}$ Was it all a lie?!
+
+<div align="center">
+  <img src="figures/scope_vscode.png">
+</div>
+
+---
+
+## Scope
+
+Actually, there are two types of local scope: **soft** and **hard**
+
+Here is how Julia `1.7` applies them
+
+<div align="center">
+  <img src="figures/scope_1.png">
+</div>
+
+---
+
+## Scope
+
+When you assign `x = 10`
+
+- If `x` is already defined in the local scope: the existing local `x` is assigned
+--
+
+- Otherwise
+   - In **hard local scope**: a new local `x` is created and assigned
+   - In **soft local scope**, it depends on whether a global `x` is defined...
+--
+
+      - If there is no global `x`: a new local `x` is created and assigned
+      - If there is a global `x`: the assignment is *ambiguous*...
+--
+         - In *non-interactive* context (running a file): a new local `x` is created and assigned
+         - In *interactive* context (REPL, notebooks): the global `x` is assigned
+---
+
+## Scope
+
+So here is why we get different results:
+
+- The `for` loop written in global (e.g.: outside of a function) has **soft local scope**
+
+- When I run the code in a file to generate these slides, that `for` loop is in a *non-interactive* context $\rightarrow$ a new local `zz` is created and assigned  
+
+- When I run it in VS Code/REPL, it's in an *interactive* context $\rightarrow$ the global `zz` is assigned  
+
+--
+
+(This is a bit confusing, I know...)
+
+---
+
+
+## Scope
+
+Generally, you want to avoid global scope because it can cause conflicts, slowness, etc. But you can use `global` to force it if you want something to have global scope
+
+```{julia}
+zz = 0;
+for ii = 1:10
+  global zz
+  zz = ii
+end
+println("zz = $zz")
+```
+
+---
+
+## Scope
+
+Local scope kicks in whenever you have a new block keyword (i.e. you indented something) except for `if`
+
+Global variables inside a local scope are inherited for .blue[reading], not writing
+
+```{julia}
+x, y = 1, 2;
+function foo()
+  x = 2        # assignment introduces a new local
+  return x + y # y refers to the global
+end;
+foo()
+x
+```
+
+---
+
+## Scope
+
+We can fix looping issues with global scope by using a wrapper function that doesn't do anything but change the parent scope so it is not global
+
+```{julia}
+zzz = 1;
+function wrapper()
+  zzz = 0;
+  for iii = 1:10
+    zzz = iii
+  end
+  println("zzz = $zzz")
+end
+wrapper()
+```
+
+---
+
+class: inverse, center, middle
+
+# 5. Generic programming
+
+---
+
+## Generic functions
+
+(We will continue next class)
