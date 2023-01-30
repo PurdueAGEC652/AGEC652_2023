@@ -1227,4 +1227,411 @@ class: inverse, center, middle
 
 ## Generic functions
 
-(We will continue next class)
+If you use Julia to write code for research you should aim to write **generic functions**
+
+--
+
+These functions
+- are flexible: e.g. can deal with someone using an `Int` instead of a `Float`
+- have high performance, speed comparable to C
+
+---
+
+## Generic functions
+
+Functions are made generic by paying attention to types and making sure types are **stable**
+
+--
+
+**Type stability:** Given an input into a function, operations on that input should maintain the type so Julia *knows* what its type will be throughout the full function call
+
+--
+
+This allows Julia to compile type-specialized versions of the functions, which will yield higher performance
+
+--
+
+*Type stability* sounds like mandating types (like what C and Fortran do, unlike what R and Python do). So how do we make it flexible?
+
+---
+
+## Generic functions: type stability
+
+These two functions look the same, but are they?
+
+```{julia, results = 'hide'}
+function t1(n)
+  s = 0
+  t = 1
+  for i in 1:n
+     s += s/i
+     t = div(t, i)
+  end
+  return t
+end
+```
+```{julia, results = 'hide'}
+function t2(n)
+  s  = 0.0
+  t = 1
+  for i in 1:n
+     s += s/i
+     t = div(t, i)
+  end
+  return t
+end
+```
+
+---
+
+## Generic functions: type stability
+
+No! t1 is *not type stable*
+
+--
+
+`t1` starts with `s` as an `Int64`. But then we have `s += s/i` which means it must hold a `Float64`
+
+--
+
+It must be converted to `Float` so it is not type stable
+
+---
+
+## Generic functions: type stability
+
+We can see this when calling the macro `@code_warntype` where it reports `t1` at some point handles `s` that has type `Union{Float64,Int64}`, either `Float64` or `Int64`
+
+Julia now can't assume `s`'s type and produce pure integer or floating point code. This leads to **performance degradation**
+
+<div align="center">
+  <img src="figures/t1_codewarn.png" height=200>
+  <img src="figures/t2_codewarn.png" height=200>
+</div>
+
+---
+
+## Concrete vs abstract types
+
+A **concrete type** is one that can be instantiated 
+- E.g.: `Float64`, `Bool`, `Int32`
+
+--
+
+An **abstract type** cannot 
+- E.g.: `Real`, `Number`, `Any`
+
+---
+
+## Concrete vs abstract types
+
+Abstract types are used for organizing types
+
+You can check where types are in the hierarchy (with the subtype operator `<:`)
+
+```{julia}
+@show Float64 <: Real
+@show Array <: Real
+```
+
+---
+
+## Concrete vs abstract types
+
+You can see the type hierarchy with the supertypes and subtypes commands
+
+```{julia}
+using Base: show_supertypes
+show_supertypes(Float64)
+```
+
+---
+
+## Creating new types
+
+We can actually create new composite types using `struct`
+
+--
+
+```{julia}
+struct FoobarNoType # This will be immutable by default
+  a
+  b
+  c
+end
+```
+
+This creates a new type called `FoobarNoType`
+
+---
+
+## Creating new types
+
+We can generate a variable of type `FoobarNoType` using its **constructor** which will have the same name
+
+--
+
+```{julia}
+newfoo = FoobarNoType(1.3, 2, "plzzz");
+typeof(newfoo)
+newfoo.a
+```
+
+---
+
+## Creating new types
+
+Custom types are a *handy and elegant way of organizing your program*
+
+- You can define a type `ModelParameters` to contain all your model parameters
+
+- Each variable you instantiate represents a single scenario
+
+- Then, instead of having a function call
+
+```julia
+RunMyModel(param1, param2, param3, param4, param5);
+```
+
+- You call
+
+```julia
+RunMyModel(modelParameters);
+```
+
+
+---
+
+## Creating new types
+
+.red[You should always declare types for the fields of a new composite type]
+
+--
+
+You can declare types with the double colon
+
+
+```{julia}
+struct FoobarType # This will be immutable by default
+  a::Float64
+  b::Int
+  c::String
+end
+```
+
+---
+
+## Creating new types
+
+```{julia}
+newfoo_typed = FoobarType(1.3, 2, "plzzz");
+typeof(newfoo_typed)
+newfoo.a
+```
+
+This lets the compiler generate efficient code because it knows the types of the fields when you construct a `FoobarType`
+
+Declaring abstract types isn't good enough: you need to declare concrete types. But how do we keep it flexible, then?
+
+---
+
+## Creating new types
+
+#### Parametric types are what help deliver flexibility
+
+We can create types that hold different types of fields by declaring subsets of abstract types
+
+```{julia}
+struct FooParam{t1 <: Real, t2 <: Real, t3 <: AbstractArray{<:Real}}
+  a::t1
+  b::t2
+  c::t3
+end
+newfoo_para = FooParam(1.0, 7, [1., 4., 6.])
+```
+
+--
+
+The curly brackets declare all the different type subsets we will use in `FooParam`
+
+--
+
+This actually delivers high-performance code!
+
+---
+
+class: inverse, center, middle
+
+# 6. Multiple dispatch
+
+---
+
+## Multiple dispatch
+
+#### Why type stability really matters: multiple dispatch
+
+This means that the same function name can perform different operations depending on the type of the inputs it receives
+
+In practice, a function specifies different **methods**, each of which operates on a specific set of types
+
+---
+
+## Multiple dispatch
+
+When you write a function that is type stable, you are actually writing many different methods, each of which are optimized for certain types
+
+--
+
+If your function isn't type stable, the optimized method may not be used
+
+This is why Julia can achieve C speed: it compiles optimized code for each type and doesn't need to waste time "guessing" a variable's type
+
+---
+
+## Multiple dispatch
+
+`/` has MANY different methods for division depending on the input types! Each of these is a function specialized function that treats the inputs differently
+
+```{julia}
+methods(/)
+```
+
+---
+
+class: inverse, center, middle
+
+# Programming advice
+
+---
+
+## Some concluding words on programming
+
+There is really only one way to effectively get better at programming: **PRACTICE**
+
+--
+
+Yes, reading *can help*, especially by making you aware of tools and resources. But it's no substitute for actually solving problems with the computer
+
+
+---
+
+## Some concluding words on programming
+
+#### How to get started with your practice? ####
+
+My suggestion of an intuitive way: **practice writing programs to solve problems you would know how to solve by hand**
+
+--
+
+- The computer follows a strict logic that very often is different from yours
+- Learning how to tell the computer to follow instructions and get to a destination you already know is a great way of learning
+
+--
+
+My personal favorite: [Project Euler](https://projecteuler.net) 
+
+---
+
+## Some concluding words on programming
+
+> *Project Euler is a series of challenging mathematical/computer programming problems that will require more than just mathematical insights to solve. Although mathematics will help you arrive at elegant and efficient methods, the use of a computer and programming skills will be required to solve most problems.*
+
+--
+
+Example of problems
+1. If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23. *Find the sum of all the multiples of 3 or 5 below 1000.*
+--
+
+2. The prime factors of 13195 are 5, 7, 13 and 29. *What is the largest prime factor of the number 600851475143 ?*
+
+--
+
+You can type in your answer and it will tell you if it's correct
+
+---
+
+## Some concluding words on programming
+
+More on coding practices and efficiency:
+
+- See [JuliaPraxis](https://github.com/JuliaPraxis) for best practices for naming, spacing, comments, etc
+
+- See more [Performance tips](https://docs.julialang.org/en/v1/manual/performance-tips) from Julia Documentation
+
+
+---
+
+## What about ChatGPT?
+
+- You are lucky! You're among the first cohort of people learning to program with an available AI language model that is advanced enough to **understand, explain, and generate** code
+
+--
+
+- There's actually a version exclusively for coding: CODEX
+
+- Currently, one of the best available services for that is called GitHub Copilot. It's paid, but you can get it for free with an `.edu` email
+
+**But hold on. Don't use this powerful resource without careful consideration**
+
+---
+
+## What about ChatGPT?
+
+*But hold on. Don't use this powerful resource without careful consideration*
+
+- **This must be a complement, not a substitute for your programming skills**
+
+Why? 
+
+--
+
+- Professional software developers report GH Copilot produces buggy, incomplete, or outright incorrect code more often than not
+  - Before you use it accurately, you need to be familiar enough with programming logic and the language you are using to know when things are wrong
+- These tools will improve, but they will always be imperfect
+  - There is an inherent limitation in translating ambiguous (natural) languages to non-ambiguous (formal) languages
+
+---
+
+## Advice on AI coding assistants
+
+*Here is my personal advice to you focusing on your the medium/long-term career as a researcher*
+
+1) **Do not use AI assistants to generate code you still cannot write and understand**
+
+- There's too big of a risk of producing incorrect code
+- It will place a low cap on your logical thinking for computational methods
+- Once you advance and become familiar with programming structures, you start relying in AI to speed up your coding
+  - Most likely, this will not happen much during this course
+
+---
+
+## Advice on AI coding assistants
+
+*Here is my personal advice to you focusing on your the medium/long-term career as a researcher*
+
+2) **Do use AI assistants to explain code to you**
+- Throughout the semester, you will see many examples of algorithms
+- AI can offer *tremendous* help explaining the inner workings of algorithms
+  - [It can even do that as a 1940's gangster](https://twitter.com/HexenkingTV/status/1598278033336852483)
+
+--
+
+3) If you are a good programmer in one language, **AI tools can also help you translate code**
+- Even in that case, I'd still recommend you start using it to explain code in the "new" language rather than simply generate code for you
+
+
+---
+
+## .blue[Course roadmap]
+
+This concludes Unit 1. Up next
+
+1. .gray[Intro to Scientific Computing]
+2. **Numerical operations and representations** 
+   1. **Numerical arithmetic** $\leftarrow$
+   2. .gold[Numerical differentiation and integration]
+3. Systems of equations
+4. Function approximation
+5. Optimization
+6. Structural estimation
+
