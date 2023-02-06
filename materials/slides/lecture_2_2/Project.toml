@@ -1,0 +1,4 @@
+[deps]
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
+QuantEcon = "fcd29c91-0bd7-5a09-975d-7ac3f643a60c"
