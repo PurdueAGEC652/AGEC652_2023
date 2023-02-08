@@ -639,10 +639,10 @@ The details of decomposing calculations with computer instructions get pretty co
 ## Autodiff: let the computer do it
 
 ```{julia, results = 'hide'}
-# Your function needs to be written in a particular way because the autodiff package is dumb
-# *(x,y) is the Julia function way to do x*y, 
-# autodiff needs to be in terms of julia functions to work correctly ¯\_(ツ)_/¯
-ff(x) = *(x[1],x[1]) # x^2
+# Your function needs to be written in a particular way because the autodiff package can
+# only accept arrays as arguments. But it's easy to adapt it to work with scalars: you
+# just need to define an array with one element
+ff(x) = (x[1])^2 # x^2
 x = [2.0]; # location to evaluate: ff(x) = 2^2
 ```
 
@@ -663,7 +663,7 @@ println("ff'(x) at $(x[1]) is: $(g(ff,x)[1])") # display gradient value
 Once you get the hang of coding up function for autodiff it's not that hard
 
 ```{julia, results = 'hide'}
-fff(x) = sin(*(x[1],x[1])) # write it in the autodiff way
+fff(x) = sin(x[1]^2) # write it in the autodiff way
 x = [2.0]  # location to evaluate: ff(x) = 2^2
 g(f,x) = ForwardDiff.gradient(f,x)  # g = ∇f
 ```
@@ -684,7 +684,6 @@ Try it out! Code up the derivative of $log(10 + x)$ at `x=5.5` using automatic d
 1. Make sure you have the `ForwardDiff` package
   1. If not type `using Pkg` then `Pkg.add("ForwardDiff")`
 2. Define your function `my_fun`
-  1. Pay attention to how you write the sum!
 3. Define `x` as a 1-element array containing `5.5`
 4. Define the gradient operator `g` using `ForwardDiff.gradient(f,x)`
 5. Use `g` to evaluate the derivative
@@ -692,21 +691,7 @@ Try it out! Code up the derivative of $log(10 + x)$ at `x=5.5` using automatic d
 
 ---
 
-## Autodiff: let the computer do it
-
-```{julia}
-my_fun(x) = log(+(x[1], 10.0));
-x = [5.5];
-g(f,x) = ForwardDiff.gradient(f,x);
-g(my_fun,x)[1]
-1/(10.0 + x[1])
-```
-
-
-
----
-
-## Calculus operations
+## Numerical integration
 
 First thing: integration is trickier than differentiation
 
@@ -843,7 +828,7 @@ f(x) = x.^2;
 integrate_mc(f, 0, 10, 1000)
 ```
 
-Pretty close!
+Quite close for a random process!
 
 ---
 
@@ -1243,7 +1228,7 @@ Tip: Type `?` in the REPL and the name of the function to read its documentation
 
 
 1. Use `quadrect` to integrate using Monte Carlo
-  1. You will need to code your function to accept an array (`.` syntax)
+  1. You will need to code your function `f` to accept an array (`.` syntax)
 2. Use `qnwtrap` to integrate using the Trapezoid rule quadrature
 3. Use `qnwlege` to integrate using Gaussian quadrature
 
