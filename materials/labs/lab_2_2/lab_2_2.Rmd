@@ -1,0 +1,166 @@
+---
+title: "AGEC 652 - Lab for unit 2.2"
+subtitle: "Calculating moments of nonlinear functions"
+date: "Spring 2023"
+author: "Diego S. Cardoso"
+#institute: "Purdue University, Department of Agricultural Economics"
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: '16:9'
+---
+exclude: true
+```{r setup}
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(
+  xaringanthemer, JuliaCall
+)
+
+#options(htmltools.dir.version = FALSE)
+
+knitr::opts_hooks$set(fig.callout = function(options) {
+  if (options$fig.callout) {
+    options$echo <- FALSE
+  }
+
+  knitr::opts_chunk$set(echo = TRUE, fig.align="center")
+  options
+})
+
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_mono_accent(
+  base_color = "#8E6F3E", 
+  header_font_google = google_font("Josefin Sans"),
+  text_font_size = "28px",
+  colors = c(
+    red = "#f34213",
+    gold = "#CFB991",
+    gray = "#C0C0C0",
+    blue = "#295fbe",
+    black = "#000000"
+  )
+)
+
+extra_css <- list(
+  ".small" = list("font-size" = "90%"),
+  ".big" = list("font-size" = "125%"),
+  ".footnote" = list("font-size" = "60%"), 
+  ".full-width" = list(
+    display = "flex",
+    width   = "100%",
+    flex    = "1 1 auto"
+  )
+)
+
+style_extra_css(css = extra_css)
+
+```
+
+```{julia}
+using Pkg
+Pkg.activate(".")
+Pkg.instantiate()
+Pkg.add("Plots"); Pkg.add("Distributions");
+```
+
+---
+
+## Problem 
+
+We are interested in estimating the mean and variance of household consumption of a good whose demand function is given by
+
+$$q(y) = \phi \tilde{y}^\alpha$$
+
+where $\phi, \alpha > 0$.
+
+Income levels $\tilde{y}$ are log-normally distributed. This means that the log of $y$ are normally distributed, with mean $\mu$ and standard deviation $\sigma$.
+
+---
+
+## Problem
+
+$$q(y) = \phi \tilde{y}^\alpha$$
+
+Calculate
+
+a. $E[q(y)]$
+
+b. $Var[q(y)]$
+
+with $\phi = 11$, $\alpha = 0.1$, $\mu = 60$, and $\sigma = 1.5$. 
+
+Use `QuantEcon.qnwlogn` function to calculate $n=15$ nodes and weights of a quadrature method specific for log-normal distributions.
+
+---
+
+## Setup
+
+Import the necessary packages
+
+```{julia}
+using QuantEcon, Distributions;
+using Plots; # We'll use this to plot the distribution
+```
+
+
+---
+
+## Setup
+
+Define the model parameters
+
+```{julia}
+ϕ = 11;
+α = 0.1;
+μ = 60;
+σ = 1.5;
+```
+
+
+---
+
+## Plotting the distribution
+
+Let's take a look at the income distribution for this problem
+
+```{julia}
+y_dist = LogNormal(log(μ), log(σ)); # Define the distribution over which we integrate
+```
+
+```{julia, out.height="40%"}
+plot(0:200, pdf.(y_dist, 0:200), label="PDF of y") # Plot its PDF
+```
+
+
+---
+
+.blue[Your turn, part A]
+
+Calculate $E[q(y)]$. To do so
+
+1. Define function `q(y)`.
+  1. Try out a few values around the mean income to get a sense of the magnitude
+2. Use the `QuantEcon.qnwlogn` function with 15 nodes to calculate the nodes and weights
+  1. Note that you need to take the logs of $\mu$ and $\sigma$!
+3. Calculate the expectation using the quadrature method
+  1. Check: is $E[q(y)] = q(E[y])$? 
+
+---
+
+.blue[Your turn, part B]
+
+Calculate $Var[q(y)]$. To do so, Remember: $Var[X] = E[X^2] - E[X]^2$
+
+1. Calculate the expectation of the square
+  1. The distribution is the same, so you can use the same nodes and weights!
+2. Use your answer from part A to calculate the second term
+3. Compute the variance using the terms from items 1 and 2
+
+

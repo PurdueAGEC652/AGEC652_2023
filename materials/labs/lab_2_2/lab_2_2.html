@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>AGEC 652 - Lab for unit 2.2</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Diego S. Cardoso" />
+    <script src="lab_2_2_files/header-attrs-2.19/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# AGEC 652 - Lab for unit 2.2
+]
+.subtitle[
+## Calculating moments of nonlinear functions
+]
+.author[
+### Diego S. Cardoso
+]
+.date[
+### Spring 2023
+]
+
+---
+
+exclude: true
+
+```r
+if (!require("pacman")) install.packages("pacman")
+```
+
+```
+## Loading required package: pacman
+```
+
+```r
+pacman::p_load(
+  xaringanthemer, JuliaCall
+)
+
+#options(htmltools.dir.version = FALSE)
+
+knitr::opts_hooks$set(fig.callout = function(options) {
+  if (options$fig.callout) {
+    options$echo &lt;- FALSE
+  }
+
+  knitr::opts_chunk$set(echo = TRUE, fig.align="center")
+  options
+})
+```
+
+
+
+
+```julia
+using Pkg
+Pkg.activate(".")
+Pkg.instantiate()
+Pkg.add("Plots"); Pkg.add("Distributions");
+```
+
+---
+
+## Problem 
+
+We are interested in estimating the mean and variance of household consumption of a good whose demand function is given by
+
+`$$q(y) = \phi \tilde{y}^\alpha$$`
+
+where `\(\phi, \alpha &gt; 0\)`.
+
+Income levels `\(\tilde{y}\)` are log-normally distributed. This means that the log of `\(y\)` are normally distributed, with mean `\(\mu\)` and standard deviation `\(\sigma\)`.
+
+---
+
+## Problem
+
+`$$q(y) = \phi \tilde{y}^\alpha$$`
+
+Calculate
+
+a. `\(E[q(y)]\)`
+
+b. `\(Var[q(y)]\)`
+
+with `\(\phi = 11\)`, `\(\alpha = 0.1\)`, `\(\mu = 60\)`, and `\(\sigma = 1.5\)`. 
+
+Use `QuantEcon.qnwlogn` function to calculate `\(n=15\)` nodes and weights of a quadrature method specific for log-normal distributions.
+
+---
+
+## Setup
+
+Import the necessary packages
+
+
+```julia
+using QuantEcon, Distributions;
+using Plots; # We'll use this to plot the distribution
+```
+
+
+---
+
+## Setup
+
+Define the model parameters
+
+
+```julia
+ϕ = 11;
+α = 0.1;
+μ = 60;
+σ = 1.5;
+```
+
+
+---
+
+## Plotting the distribution
+
+Let's take a look at the income distribution for this problem
+
+
+```julia
+y_dist = LogNormal(log(μ), log(σ)); # Define the distribution over which we integrate
+```
+
+```
+## LogNormal{Float64}(μ=4.0943445622221, σ=0.4054651081081644)
+```
+
+
+```julia
+plot(0:200, pdf.(y_dist, 0:200), label="PDF of y") # Plot its PDF
+```
+
+&lt;img src="lab_2_2_files/figure-html/unnamed-chunk-5-J1.png" width="800" height="40%" /&gt;
+
+
+---
+
+.blue[Your turn, part A]
+
+Calculate `\(E[q(y)]\)`. To do so
+
+1. Define function `q(y)`.
+  1. Try out a few values around the mean income to get a sense of the magnitude
+2. Use the `QuantEcon.qnwlogn` function with 15 nodes to calculate the nodes and weights
+  1. Note that you need to take the logs of `\(\mu\)` and `\(\sigma\)`!
+3. Calculate the expectation using the quadrature method
+  1. Check: is `\(E[q(y)] = q(E[y])\)`? 
+
+---
+
+.blue[Your turn, part B]
+
+Calculate `\(Var[q(y)]\)`. To do so, Remember: `\(Var[X] = E[X^2] - E[X]^2\)`
+
+1. Calculate the expectation of the square
+  1. The distribution is the same, so you can use the same nodes and weights!
+2. Use your answer from part A to calculate the second term
+3. Compute the variance using the terms from items 1 and 2
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
