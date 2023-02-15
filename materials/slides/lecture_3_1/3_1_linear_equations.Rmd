@@ -67,6 +67,7 @@ style_extra_css(css = extra_css)
 using Pkg
 Pkg.activate(".")
 Pkg.instantiate()
+Pkg.add("BenchmarkTools")
 ```
 
 ---
@@ -78,8 +79,9 @@ Pkg.instantiate()
 3. **Systems of equations** 
   1. **Linear equations** $\leftarrow$ .blue[You are here]
   2. Nonlinear equations
-4. Optimization
-5. Structural estimation
+4. Function approximation
+5. Optimization
+6. Structural estimation
 
 
 ---
@@ -535,7 +537,7 @@ end
 ```
 
 ```{julia, results = 'hide'}
-n = 100
+n = 1000
 A = rand(n, n)
 b = rand(n)
 ```
@@ -544,7 +546,7 @@ b = rand(n)
 
 ## Example: LU vs Cramer
 
-Let's see the full results of the competition for a 10x10:
+Let's see the full results of the competition for a 1,000 x 1,000 matrix:
 ```{julia}
 using BenchmarkTools
 cramer_time = @elapsed solve_cramer(A, b);
@@ -564,14 +566,14 @@ LU is $(round(cramer_time/lu_time, digits = 0)) times faster
 
 ## Example: LU vs matrix inversion
 
-Let's see the full results of the competition for a 10x10:
+Let's see the full results of the competition for a 1,000 x 1,000 matrix:
 ```{julia}
 using BenchmarkTools
 invers_time = @elapsed ((A^-1)*b);
 invers_allocation = @allocated ((A^-1)*b);
 
 println(
-"Matrix inversion solved in $cramer_time seconds and used $cramer_allocation kilobytes of memory.
+"Matrix inversion solved in $invers_time seconds and used $invers_allocation kilobytes of memory.
 LU solved in $(lu_time) seconds and used $(lu_allocation) kilobytes of memory.
 LU is $(round(invers_time/lu_time, digits = 2)) times faster
  and uses $(round(lu_allocation/invers_allocation*100, digits = 2))%  of the memory.")
