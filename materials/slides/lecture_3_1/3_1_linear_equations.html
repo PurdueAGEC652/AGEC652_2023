@@ -202,13 +202,13 @@ x_1 = &amp;  b_1/a_{11} \\
 x_2 = &amp; (b_2 - a_{21}x_1)/a_{22} \\
 x_3 = &amp; (b_3 - a_{31}x_1 - a_{32}x_2)/a_{33} \\
 \vdots \\
-x_n = &amp; (b_3 - a_{n1}x_1 - a_{n2}x_2 - \cdots)/a_{nn} \\
+x_n = &amp; (b_n - a_{n1}x_1 - a_{n2}x_2 - \cdots)/a_{nn} \\
 \end{align}`
 $$
 
 --
 
-We can write a simple algorithm to solve it: `\(x_i=\left(b_i-\sum^{i-1}_{j=1} a_{ij}x_{j}\right)/a_{nn}\)` for all `\(i\)`
+We can write a simple algorithm to solve it: `\(x_i=\left(b_i-\sum^{i-1}_{j=1} a_{ij}x_{j}\right)/a_{ii}\)` for all `\(i\)`
 
 What if `\(A\)` is *upper triangular*? We use *backward substitution* and just reverse the order
 
@@ -220,7 +220,7 @@ What is the complexity of this algorithm (in `\(O\)` notation)?
 
 ## Solving linear equations: forward substitution
 
-`\(x_i=\left(b_i-\sum^{i-1}_{j=1} a_{ij}x_{j}\right)/a_{nn}\)` for all `\(i\)`
+`\(x_i=\left(b_i-\sum^{i-1}_{j=1} a_{ij}x_{j}\right)/a_{ii}\)` for all `\(i\)`
 
 What is the complexity of this algorithm? 
 
@@ -313,7 +313,7 @@ $$ A =
 3  &amp; 0 &amp; 0 \\
 \end{bmatrix}`
 $$
-We do `row2 = row2 - (1)*row1` and `row3 = row3 - (-1)*row1`, keeping track of these operations in the `\(L\)` matrix
+We do `\(row2 = row2 - (1)\times row1\)` and `\(row3 = row3 - (-1)\times row1\)`, keeping track of these operations in the `\(L\)` matrix
 
 $$ A = 
 `\begin{bmatrix}
@@ -566,9 +566,9 @@ LU is $(round(cramer_time/lu_time, digits = 0)) times faster
 ```
 
 ```
-## Cramer's rule solved in 21.1918312 seconds and used 16016304720 kilobytes of memory.
-## LU solved in 0.1455464 seconds and used 8016304 kilobytes of memory.
-## LU is 146.0 times faster 
+## Cramer's rule solved in 30.6879541 seconds and used 16016304720 kilobytes of memory.
+## LU solved in 0.2080845 seconds and used 8016304 kilobytes of memory.
+## LU is 147.0 times faster 
 ##  and uses 0.05%  of the memory.
 ```
 
@@ -592,9 +592,9 @@ LU is $(round(invers_time/lu_time, digits = 2)) times faster
 ```
 
 ```
-## Matrix inversion solved in 0.2430721 seconds and used 8528432 kilobytes of memory.
-## LU solved in 0.1455464 seconds and used 8016304 kilobytes of memory.
-## LU is 1.67 times faster
+## Matrix inversion solved in 0.4347893 seconds and used 8528432 kilobytes of memory.
+## LU solved in 0.2080845 seconds and used 8016304 kilobytes of memory.
+## LU is 2.09 times faster
 ##  and uses 94.0%  of the memory.
 ```
 
