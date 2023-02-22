@@ -958,7 +958,7 @@ Then, we assume initial values `\(x_i^{(0)} \; \forall i\)` and iterate all `\(x
 
 --
 
-`\(\Rightarrow\)` we turned a "$n$ equations with `\(n\)` unknowns" into repeatedly solving `\(n\)` equations with *1* unknown
+`\(\Rightarrow\)` we turned a " `\(n\)` equations with `\(n\)` unknowns" into repeatedly solving `\(n\)` equations with *1* unknown
 
 ---
 
@@ -971,7 +971,7 @@ Then, we assume initial values `\(x_i^{(0)} \; \forall i\)` and iterate all `\(x
 This is a parameter you have to choose
 - Usually, we will set a `tolerance` value
 - Then, in each iteration, we take some metric of the difference `\(\delta_x\)` between `\(x^{k+1}\)` and `\(x^{k}\)`
-- If $d_x &lt; $ `tolerance`, we stop iterating and declare `\(x^{k+1}\)` our solution 
+- If `\(d_x < \)` `tolerance`, we stop iterating and declare `\(x^{k+1}\)` our solution 
 
 The actual choice of `tolerance` will depend on the scale of your variables and the desired precision
 
@@ -1622,7 +1622,7 @@ And, **stabilizing** the solution with **dampening** could look like this
 
 ## Acceleration and Stabilization methods
 
-These methods don't always work, may it's a good idea to try if you are having issues with slow convergence or divergence
+These methods don't always work. It may be a good idea to try if you are having issues with slow convergence or divergence
 
 We'll skip the technical details of when these methods work for operator splitting
 - You can find them in chapter 3 of Judd's textbook 
