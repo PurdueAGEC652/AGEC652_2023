@@ -639,7 +639,7 @@ end;
 
 ```{julia}
 f(x) = -x^(-2) + x - 1;
-f_prime(x) = 2x^(-1) + 1;
+f_prime(x) = 2x^(-3) + 1;
 newtons_method(f, f_prime, 1.0)
 ```
 
@@ -668,7 +668,7 @@ If $f'(x)$ is ill-conditioned we can run into problems with rounding error
 
 ## Newton's method: a duopoly example
 
-Inverse demand: $P(q) = q^{-1/\eta}$
+Inverse demand: $P(q) = q^{-1/\epsilon}$
 
 Two firms with costs: $C_i(q_i) = \frac{1}{2}c_i q_i^2$
 
@@ -693,8 +693,8 @@ We are looking for an equilibrium: a pair $(q_1, q_2)$ which are roots to two no
 
 $$
 \begin{align*}
-f_1(q_1, q_2) & = (q_1 + q_2)^{-1/\eta} - (1/\eta)(q_1 + q_2)^{-1/\eta-1}q_1 - c_1 q_1 = 0 \\
-f_2(q_1, q_2) & = (q_1 + q_2)^{-1/\eta} - (1/\eta)(q_1 + q_2)^{-1/\eta-1}q_2 - c_2 q_2 = 0
+f_1(q_1, q_2) & = (q_1 + q_2)^{-1/\epsilon} - (1/\epsilon)(q_1 + q_2)^{-1/\epsilon-1}q_1 - c_1 q_1 = 0 \\
+f_2(q_1, q_2) & = (q_1 + q_2)^{-1/\epsilon} - (1/\epsilon)(q_1 + q_2)^{-1/\epsilon-1}q_2 - c_2 q_2 = 0
 \end{align*}
 $$
 
@@ -708,10 +708,10 @@ Let's do it numerically, starting by coding this function in Julia
 
 ## Newton's method: a duopoly example
 
-For this example, $\eta = 1.6, c_1 = 0.6, c_2 = 0.8$
+For this example, $\epsilon = 1.6, c_1 = 0.6, c_2 = 0.8$
 
 ```{julia}
-eta = 1.6; c = [0.6; 0.8]; # column vector
+epsilon = 1.6; c = [0.6; 0.8]; # column vector
 ```
 
 
@@ -720,7 +720,7 @@ $f(q)$ will return a vector (*pay attention to how I used the dot syntax*)
 ```{julia}
 function f(q)
     Q = sum(q)
-    F = Q^(-1/eta) .- (1/eta)Q^(-1/eta-1) .*q .- c .*q
+    F = Q^(-1/epsilon) .- (1/epsilon)Q^(-1/epsilon-1) .*q .- c .*q
 end;
 f([0.2; 0.2])
 ```
@@ -750,8 +750,8 @@ We can derive these terms analytically
 
 $$
 \begin{align*}
-\frac{\partial f_{i}}{\partial q_{i}} &= (1/\eta)(q_{1}+q_{2})^{-1/\eta-1}\left[-2+(1/\eta+1)(q_{1}+q_{2})^{-1}q_{i}\right]-c_{i} \\
-\frac{\partial f_{i}}{\partial q_{j\neq i}} &= \underbrace{(1/\eta)(q_{1}+q_{2})^{-1/\eta-1}}_{A} \left[1+ \underbrace{(1/\eta+1)(q_{1}+q_{2})^{-1}}_{B} q_{i}\right]
+\frac{\partial f_{i}}{\partial q_{i}} &= (1/\epsilon)(q_{1}+q_{2})^{-1/\epsilon-1}\left[-2+(1/\epsilon+1)(q_{1}+q_{2})^{-1}q_{i}\right]-c_{i} \\
+\frac{\partial f_{i}}{\partial q_{j\neq i}} &= \underbrace{(1/\epsilon)(q_{1}+q_{2})^{-1/\epsilon-1}}_{A} \left[1+ \underbrace{(1/\epsilon+1)(q_{1}+q_{2})^{-1}}_{B} q_{i}\right]
 \end{align*}
 $$
 ---
@@ -777,7 +777,7 @@ c_{1} & 0\\
 0 & c_{2}
 \end{bmatrix}
 $$
-where $A\equiv(1/\eta)(q_{1}+q_{2})^{-1/\eta-1}$, $B\equiv(1/\eta)(q_{1}+q_{2})^{-1}$
+where $A\equiv(1/\epsilon)(q_{1}+q_{2})^{-1/\epsilon-1}$, $B\equiv(1/\epsilon)(q_{1}+q_{2})^{-1}$
 
 --
 
@@ -793,8 +793,8 @@ Now we define a function for the Jacobian
 using LinearAlgebra
 function f_jacobian(q)
     Q = sum(q)
-    A = (1/eta)Q^(-1/eta-1)
-    B = (1/eta)Q^(-1)
+    A = (1/epsilon)Q^(-1/epsilon-1)
+    B = (1/epsilon)Q^(-1)
     J = A .* [-2 1; 1 -2] + (A*B) .* [q q] - LinearAlgebra.Diagonal(c)
 end;
 f_jacobian([0.2; 0.2])
@@ -1046,8 +1046,8 @@ Once again, we are looking a pair $(q_1, q_2)$ which are roots to two nonlinear 
 
 $$
 \begin{align*}
-f_1(q_1, q_2) & = (q_1 + q_2)^{-1/\eta} - (1/\eta)(q_1 + q_2)^{-1/\eta-1}q_1 - c_1 q_1 = 0 \\
-f_2(q_1, q_2) & = (q_1 + q_2)^{-1/\eta} - (1/\eta)(q_1 + q_2)^{-1/\eta-1}q_2 - c_2 q_2 = 0
+f_1(q_1, q_2) & = (q_1 + q_2)^{-1/\epsilon} - (1/\epsilon)(q_1 + q_2)^{-1/\epsilon-1}q_1 - c_1 q_1 = 0 \\
+f_2(q_1, q_2) & = (q_1 + q_2)^{-1/\epsilon} - (1/\epsilon)(q_1 + q_2)^{-1/\epsilon-1}q_2 - c_2 q_2 = 0
 \end{align*}
 $$
 

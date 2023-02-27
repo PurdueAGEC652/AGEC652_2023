@@ -1,6 +1,6 @@
 # Syllabus AGEC 652 – Spring 2023 <!-- omit in toc -->
 
-*This syllabus is subject to revisions. You will be notified of any changes as far in advance as possible. Please monitor your Purdue email and Brightspace for updates. This version was created on Feb. 23, 2023.*
+*This syllabus is subject to revisions. You will be notified of any changes as far in advance as possible. Please monitor your Purdue email and Brightspace for updates. This version was created on Jan. 10, 2023.*
 
 ## Course information <!-- omit in toc -->
 
@@ -23,7 +23,7 @@
 
 **Instructor:** Diego S. Cardoso 
 
-**Office hours:** **In KRAN 636** Mondays 2:30 PM to 3:30 PM, Wednesdays 11 AM to 12 PM. (Starting from Jan. 18). This course has priority on Wednesdays.
+**Office hours:** **In KRAN 680** Mondays 2:30 PM to 3:30 PM, Wednesdays 11 AM to 12 PM. (Starting from Jan. 18). This course has priority on Wednesdays.
 
 **Email:** [cardosod@purdue.edu](mailto:cardosod@purdue.edu). Please include "AGEC652" in the subject for all emails. I will read and respond to course-related emails in a timely fashion during weekdays between 9 AM and 5 PM.
 
