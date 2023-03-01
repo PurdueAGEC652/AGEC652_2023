@@ -842,7 +842,7 @@ We can derive these terms analytically
 $$
 `\begin{align*}
 \frac{\partial f_{i}}{\partial q_{i}} &amp;= (1/\epsilon)(q_{1}+q_{2})^{-1/\epsilon-1}\left[-2+(1/\epsilon+1)(q_{1}+q_{2})^{-1}q_{i}\right]-c_{i} \\
-\frac{\partial f_{i}}{\partial q_{j\neq i}} &amp;= \underbrace{(1/\epsilon)(q_{1}+q_{2})^{-1/\epsilon-1}}_{A} \left[1+ \underbrace{(1/\epsilon+1)(q_{1}+q_{2})^{-1}}_{B} q_{i}\right]
+\frac{\partial f_{i}}{\partial q_{j\neq i}} &amp;= \underbrace{(1/\epsilon)(q_{1}+q_{2})^{-1/\epsilon-1}}_{A} \left[-1+ \underbrace{(1/\epsilon+1)(q_{1}+q_{2})^{-1}}_{B} q_{i}\right]
 \end{align*}`
 $$
 ---
@@ -852,10 +852,10 @@ $$
 So we can write the Jacobian as
 
 $$
-J = A
+J = -A
 `\begin{bmatrix}
--2 &amp; 1\\
-1 &amp; -2
+2 &amp; 1\\
+1 &amp; 2
 \end{bmatrix}`
 +AB
 `\begin{bmatrix}
@@ -886,16 +886,16 @@ using LinearAlgebra
 function f_jacobian(q)
     Q = sum(q)
     A = (1/epsilon)Q^(-1/epsilon-1)
-    B = (1/epsilon)Q^(-1)
-    J = A .* [-2 1; 1 -2] + (A*B) .* [q q] - LinearAlgebra.Diagonal(c)
+    B = (1/epsilon+1)Q^(-1)
+    J = -A .* [2 1; 1 2] + (A*B) .* [q q] - LinearAlgebra.Diagonal(c)
 end;
 f_jacobian([0.2; 0.2])
 ```
 
 ```
 ## 2×2 Matrix{Float64}:
-##  -5.27494   3.63607
-##   3.63607  -5.47494
+##  -3.88977   -0.519438
+##  -0.519438  -4.08977
 ```
 
 
@@ -948,20 +948,17 @@ x = newtons_method_multidim(f, f_jacobian, [0.2; 0.2])
 
 ```
 ## Intermediate guess: [0.2, 0.2]
-## Intermediate guess: [0.8301210057769877, 0.811898634417584]
-## Intermediate guess: [0.7911782905685016, 0.6885273839312711]
-## Intermediate guess: [0.8384483524888013, 0.7064631551302145]
-## Intermediate guess: [0.8323002559883395, 0.6888379457907813]
-## Intermediate guess: [0.8394024229374498, 0.6913993149610369]
-## Intermediate guess: [0.8384895974449257, 0.6888064663887703]
-## Intermediate guess: [0.8395422926034856, 0.6891813928622154]
-## The root of f(x) is [0.8394079914942287, 0.6887983144711606]
+## Intermediate guess: [0.4522233972882232, 0.4268911412785466]
+## Intermediate guess: [0.7443820767549576, 0.6380274933135309]
+## Intermediate guess: [0.8359566131332257, 0.6874038938481142]
+## Intermediate guess: [0.8395632064645864, 0.6887954351409207]
+## The root of f(x) is [0.8395676035295858, 0.6887964311626718]
 ```
 
 ```
 ## 2-element Vector{Float64}:
-##  0.8394079914942287
-##  0.6887983144711606
+##  0.8395676035295858
+##  0.6887964311626718
 ```
 
 ---
@@ -978,19 +975,11 @@ f(x)
 
 ```
 ## 2-element Vector{Float64}:
-##  0.00015115521619213368
-##  1.114490444353855e-5
+##  5.7654991891809004e-12
+##  9.037215420448774e-13
 ```
 
 Pretty good result with quick convergence!
-
---
-
-It was tedious but in the previous example we could calculate the Jacobian analytically. Sometimes it's much harder and we can make mistakes. 
-
-.blue[
-Here is a challenge for you: redo the previous example but, instead of defining the Jacobian analytically, use the ForwardDiff package to do the derivatives for you. Then, compare your solution with mine
-]
 
 ---
 
@@ -1002,6 +991,21 @@ Visually, this is the path Newton's method followed
   &lt;image src="figures/newtons_method_ex.png" height=450&gt;
 &lt;/div&gt;
 
+
+---
+
+## Newton's method: analytic vs numerical derivatives
+
+
+It was tedious but in the previous example we could calculate the Jacobian analytically. Sometimes it's much harder and we can make mistakes. 
+
+.blue[
+Here is a challenge for you: redo the previous example but, instead of defining the Jacobian analytically, use the ForwardDiff package to do the derivatives for you. Then, compare your solution with mine.
+]
+
+--
+
+An alternative is to use the `Symbolics.jl` package. For low-dimensional derivative and Jacobians, it does a good job! (I will upload an example to our course materials)
 
 ---
 

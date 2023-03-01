@@ -751,7 +751,7 @@ We can derive these terms analytically
 $$
 \begin{align*}
 \frac{\partial f_{i}}{\partial q_{i}} &= (1/\epsilon)(q_{1}+q_{2})^{-1/\epsilon-1}\left[-2+(1/\epsilon+1)(q_{1}+q_{2})^{-1}q_{i}\right]-c_{i} \\
-\frac{\partial f_{i}}{\partial q_{j\neq i}} &= \underbrace{(1/\epsilon)(q_{1}+q_{2})^{-1/\epsilon-1}}_{A} \left[1+ \underbrace{(1/\epsilon+1)(q_{1}+q_{2})^{-1}}_{B} q_{i}\right]
+\frac{\partial f_{i}}{\partial q_{j\neq i}} &= \underbrace{(1/\epsilon)(q_{1}+q_{2})^{-1/\epsilon-1}}_{A} \left[-1+ \underbrace{(1/\epsilon+1)(q_{1}+q_{2})^{-1}}_{B} q_{i}\right]
 \end{align*}
 $$
 ---
@@ -761,10 +761,10 @@ $$
 So we can write the Jacobian as
 
 $$
-J = A
+J = -A
 \begin{bmatrix}
--2 & 1\\
-1 & -2
+2 & 1\\
+1 & 2
 \end{bmatrix}
 +AB
 \begin{bmatrix}
@@ -794,8 +794,8 @@ using LinearAlgebra
 function f_jacobian(q)
     Q = sum(q)
     A = (1/epsilon)Q^(-1/epsilon-1)
-    B = (1/epsilon)Q^(-1)
-    J = A .* [-2 1; 1 -2] + (A*B) .* [q q] - LinearAlgebra.Diagonal(c)
+    B = (1/epsilon+1)Q^(-1)
+    J = -A .* [2 1; 1 2] + (A*B) .* [q q] - LinearAlgebra.Diagonal(c)
 end;
 f_jacobian([0.2; 0.2])
 ```
@@ -859,14 +859,6 @@ f(x)
 
 Pretty good result with quick convergence!
 
---
-
-It was tedious but in the previous example we could calculate the Jacobian analytically. Sometimes it's much harder and we can make mistakes. 
-
-.blue[
-Here is a challenge for you: redo the previous example but, instead of defining the Jacobian analytically, use the ForwardDiff package to do the derivatives for you. Then, compare your solution with mine
-]
-
 ---
 
 ## Newton's method: a duopoly example
@@ -877,6 +869,21 @@ Visually, this is the path Newton's method followed
   <image src="figures/newtons_method_ex.png" height=450>
 </div>
 
+
+---
+
+## Newton's method: analytic vs numerical derivatives
+
+
+It was tedious but in the previous example we could calculate the Jacobian analytically. Sometimes it's much harder and we can make mistakes. 
+
+.blue[
+Here is a challenge for you: redo the previous example but, instead of defining the Jacobian analytically, use the ForwardDiff package to do the derivatives for you. Then, compare your solution with mine.
+]
+
+--
+
+An alternative is to use the `Symbolics.jl` package. For low-dimensional derivative and Jacobians, it does a good job! (I will upload an example to our course materials)
 
 ---
 
