@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>AGEC 652 - Lecture 4</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Diego S. Cardoso" />
+    <script src="4_function_approximation_files/header-attrs-2.19/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# AGEC 652 - Lecture 4
+]
+.subtitle[
+## Function Approximation
+]
+.author[
+### Diego S. Cardoso
+]
+.date[
+### Spring 2023
+]
+
+---
+
+exclude: true
+
+```r
+if (!require("pacman")) install.packages("pacman")
+```
+
+```
+## Loading required package: pacman
+```
+
+```r
+pacman::p_load(
+  xaringanthemer, JuliaCall
+)
+
+#options(htmltools.dir.version = FALSE)
+
+knitr::opts_hooks$set(fig.callout = function(options) {
+  if (options$fig.callout) {
+    options$echo &lt;- FALSE
+  }
+
+  knitr::opts_chunk$set(echo = TRUE, fig.align="center")
+  options
+})
+```
+
+
+
+
+```julia
+using Pkg
+Pkg.activate(".")
+Pkg.instantiate()
+#Pkg.add("Plots")
+#Pkg.add("Polynomials")
+#Pkg.add("ChebyshevApprox")
+#Pkg.add("Interpolations")
+```
+
+---
+
+## .blue[Course roadmap]
+
+1. .gray[Intro to Scientific Computing]
+2. .gray[Numerical operations and representations]
+3. .gray[Systems of equations]
+4. **Function approximation** `\(\leftarrow\)` .blue[You are here]
+5. Optimization
+6. Structural estimation
+
+
+
+---
+
+class: inverse, center, middle
+
+.footnote[\*These slides are based on Miranda &amp; Fackler (2002), Judd (1998), and course materials by Ivan Rudik.]
+
+
+---
+
+## Why bother?
+
+Much of the work we do uses closed-form functions
+- They're practical and easy to manipulate
+
+But these functions are only a subset of all possible functions
+
+--
+
+In many relevant problems, we don't have the functional form either because
+1. We have limited data/information about the function
+  - This is called an **interpolation problem**
+2. The function is actually the answer to the problem we're trying to solve
+  - This is called a **functional equation problem**
+
+
+---
+
+## Problem types: Interpolation
+
+There is a real-valued function `\(f\)` which is analytically intractable
+- Could be that `\(f\)` indeed has no admissible closed-form expression
+- Or that there might be a closed-form expression but we just don't know what it is
+
+In any case, we will instead work with a *computationally tractable* function `\(\hat{f}\)`
+
+--
+
+- We have available values `\(y_i = f(x_i)\)` at points `\(x_i, \; i=1\dots n\)`
+
+- We are interested in calculating `\(f(x)\)` for some `\(x\)` at which we don't know `\(y\)`
+
+`\(\rightarrow\)` Then, we'll use `\(\hat{f}(x) \approx f(x)\)`
+
+
+---
+
+## Problem types: Functional equations
+
+In these problems, our solution is not a value but a function
+
+Formally, we look for `\(f\)` such that `\(Tf = 0\)`, where `\(T\)` is an operator that maps a vector space of functions into itself
+
+- We can write an equivalent functional fixed-point equation `\(f = Tf\)`
+
+--
+
+Functional equations are hard because they impose an infinite number conditions, i.e., the value of `\(f\)` at an infinite number of points
+- Solutions with closed-form expressions are an exception!
+
+--
+
+Problems like this arise frequently in dynamic optimization and strategic interaction/game theory
+
+
+---
+
+class: inverse, center, middle
+
+# Interpolation
+
+---
+
+## Interpolation
+
+We want to approximate `\(f\)` with a tractable **approximant** `\(\hat{f}\)`
+
+There are two key choices we have to make to establish `\(\hat{f}\)`
+
+1. Basis functions
+
+2. Interpolation scheme
+
+---
+
+## Basis functions
+
+The first step is to choose family of functions to perform our approximation
+
+For practicality, we form a linear combination of `\(n\)` *linearly independent* **basis functions** `\(\phi_1, \phi_2, \dots, \phi_n\)` to define
+
+`$$\hat{f}(x) = \sum^n_{j=1} c_j \phi_j(x)$$`
+
+where `\(c_j\)` values are **basis coefficients** to be determined
+
+- `\(n\)` give the **degree of interpolation**
+
+---
+
+## Interpolation scheme
+
+In the second step, we must choose the criteria to determine the basis coefficients
+
+There are `\(n\)` coefficients `\(\Rightarrow\)` we need `\(n\)` conditions
+- These conditions are based on known properties of `\(f\)`
+
+--
+
+The simplest and most used way is to make `\(\hat{f}(x_i) = f(x_i)\)` for a set of **interpolation nodes** indexed by `\(i\)`
+
+
+---
+
+## Interpolation scheme
+
+`\(n\)` interpolation nodes form `\(n\)` **interpolation conditions**
+
+$$ \sum^n_{j=1} c_j \phi_j(x_i) = f(x_i), \; i=1,2,\dots,n$$
+forming a `\(n\times n\)` linear system which we know how to solve. Or, in matrix notation,
+
+`$$\Phi c = y$$`
+where `\(y_i = f(x_i)\)` and `\(\Phi_{ij} = \phi_j(x_i)\)` 
+
+
+---
+
+## Interpolation is a special case
+
+The fact that we have `\(n\)` nodes and `\(n\)` basis functions makes interpolation a special case of general **curve fitting problem**
+
+
+.blue[An example of problems with `\(n\)` nodes and `\(k &lt; n\)` basis functions?]
+
+--
+
+Let's say we have `\(n&gt;2\)` pairs `\((x_i, y_i)\)` and we are interested in approximating `\(y = f(x) \equiv E[Y|X]\)`
+
+We choose *monomial basis* with degree `\(k=2\)`, so `\(\phi_1(x) = 1\)` and `\(\phi_2(x) = x\)`
+
+--
+
+`$$E[Y|X] \approx c_1 + c_2x$$`
+
+---
+
+## Interpolation is a special case
+
+`$$E[Y|X] \approx c_1 + c_2x$$`
+
+With more nodes than basis functions, we can't guarantee to satisfy the interpolation conditions at all nodes
+
+But we can choose criteria to get as close as possible `\(\rightarrow\)` minimize errors or residuals `\(e_i = f(x_i) - \sum^n_{j=1} c_j \phi_j(x_i)\)`
+
+$$e_i = y_i - (c_1 + c_2x) $$
+
+--
+
+Minimize the sum of squared errors `\(\Rightarrow\)` OLS
+
+So interpolation is like OLS but with the same number of parameters and data points
+
+---
+
+## Interpolation scheme
+
+We need not limit ourselves to using information about `\(f(x_i)\)` only
+
+Depending on our problem, we might be interested in an `\(\hat{f}\)` that also approximates derivatives of `\(f\)` at specific points
+
+To interpolate with first derivatives, we have `\(n_1\)` nodes `\(x_i\)` and `\(n_2\)` derivative nodes `\(x^\prime_i\)` forming `\(n = n_1 + n_2\)` conditions  
+
+`\begin{align*}
+  \sum^n_{j=1} c_j \phi_j(x_i) &amp; = f(x_i), \; i=1,2,\dots,n_1 \\
+  \sum^n_{j=1} c_j \phi^\prime_j(x^\prime_i) &amp; = f^\prime(x^\prime_i), \; i=1,2,\dots,n_2
+\end{align*}`
+
+
+---
+
+## Interpolation scheme
+
+Note that the nodes for function at level and for derivatives don't have to be the same
+
+This approach can be easily generalized to higher-order derivatives and even antiderivates: all we need is for the resultimg matrix `\(\Phi\)` to be nonsingular
+
+
+---
+
+## Interpolation methods
+
+There are two broad categories of interpolation methods
+
+**1 - Spectral methods**
+These methods use basis functions that are nonzero over the entire approximation domain (except for a limited number of points)
+- Basis functions are "global": they are evaluated at any point of the domain
+- Ex: Polynomial interpolation 
+
+--
+
+**2 - Finite element methods**
+Basis functions are nonzero only over subsets if the approximation domain
+- Basis functions are "local": some basis functions are evaluated and "contribute" to points at a particular subset but not others
+- Ex: Spline (i.e., piecewise) interpolation
+
+---
+
+## Interpolation methods
+
+&lt;div align="center"&gt;
+  &lt;image src="figures/poly_vs_spline.png"&gt;
+&lt;/div&gt;
+
+
+---
+
+
+class: inverse, center, middle
+
+# Spectral methods
+
+
+---
+
+## Spectral methods
+
+When using spectral methods we virtually always use polynomials. Why?
+
+--
+
+The Stone-Weierstrass Theorem states (for one dimension)
+
+*Suppose `\(f\)` is a continuous real-valued function defined on the interval `\([a,b]\)`.  
+For every `\(\epsilon &gt; 0, \,\, \exists\)` a polynomial `\(p(x)\)` such that for all `\(x \in [a,b]\)` we have `\(||f(x) - p(x)||_{sup} \leq \epsilon\)`*
+
+--
+
+What does the SW theorem say in words?
+
+---
+
+## Spectral methods
+
+For any continuous function `\(f(x)\)`, we can approximate it arbitrarily well with some polynomial `\(p(x)\)`, as long as `\(f(x)\)` is continuous
+
+--
+
+This means the function can even have kinks
+
+--
+
+Unfortunately we do not have infinite computational power so solving kinked problems with spectral methods is not advised
+
+--
+
+- Note that the SW theorem *does not* say what kind of polynomial can approximate `\(f\)` arbitrarily well, just that some polynomial exists
+
+
+---
+
+## Basis choice
+
+What would be your first choice of basis for polynomial interpolation?
+
+--
+
+Logical choice: the monomial basis: `\(1, x, x^2,...\)`
+
+--
+
+It is simple, and SW tells us that we can uniformly approximate any continuous function on a closed interval using them
+
+---
+
+## Polynomial interpolation in Julia
+
+You've done a lot of programming so far! By now, you can
+- Write a function that takes `\(n\)` pairs `\((y_i, x_i)\)` and a value `\(x_0\)`
+- Solve the linear system to get basis coefficients for monomial basis polynomials
+- Then, use that to calculate `\(\hat{f}(x_0)\)`
+
+--
+
+But I'll leave that as an exercise for you. Let's jump straight into a package that can do that for you: `Polynomials.jl`
+
+Also, it's  easier if we can visualize functions, so we'll be plotting stuff. See [http://docs.juliaplots.org/latest/generated/gr/](http://docs.juliaplots.org/latest/generated/gr/) for examples using the `GR` backend
+
+
+---
+
+## Monomial basis interpolation in Julia
+
+Let's approximate `sin(x)` with monomial base. First, let's plot it from `\(0\)` to `\(2\pi\)`
+
+
+```julia
+using Plots
+gr();
+f(x) = sin(x);
+
+Plots.plot(f, 0, 2pi, line = 4, grid = false, legend = false, size = (400, 200))
+```
+
+&lt;img src="4_function_approximation_files/figure-html/unnamed-chunk-2-J1.png" width="533" /&gt;
+
+---
+
+## Monomial basis interpolation in Julia
+
+Let's write a function that will interpolate it for us with any `\(n\)`
+
+
+```julia
+using Polynomials;
+function interpolate_monomial(f, lower, upper, n)
+    # Construct a grid with n nodes
+    xs = range(lower, upper, length = n)
+    # Get our y = f(x) at the nodes
+    ys = f.(xs)
+    # Use Polynomials.fit to generate our ̂f hat
+    # (with n nodes, n-1 is the highest-order polynomial)
+    f_hat = Polynomials.fit(xs, ys, n-1) 
+end;
+```
+
+
+---
+
+## Monomial basis interpolation in Julia
+
+Let's see what it gives us with different `\(n\)`
+
+
+```julia
+f_hat_4 = interpolate_monomial(f, 0, 2pi, 4)
+```
+
+```
+## Polynomial(1.8607350220485481*x - 0.8884355296296998*x^2 + 0.09426593743935517*x^3)
+```
+
+```julia
+f_hat_5 = interpolate_monomial(f, 0, 2pi, 5)
+```
+
+```
+## Polynomial(1.69765272631355*x - 0.8105694691387019*x^2 + 0.08600409182186525*x^3 + 4.417437057588218e-18*x^4)
+```
+
+```julia
+f_hat_10 = interpolate_monomial(f, 0, 2pi, 10)
+```
+
+```
+## Polynomial(0.9990725797446985*x + 0.004015857158187558*x^2 - 0.17384373874409306*x^3 + 0.007075663356877636*x^4 + 0.004040763228518063*x^5 + 0.0016747985989918916*x^6 - 0.0006194667845115721*x^7 + 6.48527268908156e-5*x^8 - 2.2936960128137463e-6*x^9)
+```
+
+
+---
+
+## Monomial basis interpolation in Julia
+
+
+```julia
+# Plot the actual function and overlay our approximation using a dashed line
+# (in practice you really should put all arguments on their own line,
+# but vertical spacing is an issue on slides if we want to show the code...)
+Plots.plot(f, 0, 2pi, line = 4, grid = false, label = "sin(x)", size = (400, 250),
+           xlabel = "x", ylabel = "sin(x)", tickfontsize = 10, guidefontsize = 10)
+```
+
+&lt;img src="4_function_approximation_files/figure-html/unnamed-chunk-5-J1.png" width="533" /&gt;
+
+---
+
+## Monomial basis interpolation in Julia
+
+
+```julia
+# plot! adds to the existing plot and overlays it
+plot!(f_hat_4, 0, 2pi, color = :green, linewidth = 4.0, linestyle = :dashdot, label = "Approximation n = 4")
+```
+
+&lt;img src="4_function_approximation_files/figure-html/unnamed-chunk-6-J1.png" width="533" /&gt;
+
+
+---
+
+## Monomial basis interpolation in Julia
+
+
+```julia
+# plot! adds to the existing plot and overlays it
+plot!(f_hat_5, 0, 2pi, color = :red, linewidth = 4.0, linestyle = :dash, label = "Approximation n = 5")
+```
+
+&lt;img src="4_function_approximation_files/figure-html/unnamed-chunk-7-J1.png" width="533" /&gt;
+
+
+---
+
+## Monomial basis interpolation in Julia
+
+
+```julia
+# plot! adds to the existing plot and overlays it
+plot!(f_hat_10, 0, 2pi, color = :purple, linewidth = 4.0, linestyle = :dot, label = "Approximation n = 10")
+```
+
+&lt;img src="4_function_approximation_files/figure-html/unnamed-chunk-8-J1.png" width="533" /&gt;
+
+---
+
+## Monomial basis interpolation in Julia
+
+Cool! We just wrote some code that exploits Stone-Weierstrauss and allows us to (potentially) approximate any continuous function arbitrarily well as `n` goes to infinity
+
+--
+
+Turns out we never use the monomial basis though
+
+--
+
+&lt;div align="center"&gt;
+  &lt;img src="figures/shrug.jpeg" height=250&gt;
+&lt;/div&gt;
+
+---
+
+## Monomial basis interpolation in Julia
+
+Turns out we never use the monomial basis though
+
+Why?
+
+--
+
+Try approximating **Runge's function**: `f(x) = 1/(1 + 25x^2)`
+
+---
+
+## Runge's function
+
+
+```julia
+runge(x) = 1 ./ (1 .+ 25x.^2);
+runge_hat_5 = interpolate_monomial(runge, -1.0, 1.0, 5);
+runge_hat_10 = interpolate_monomial(runge, -1.0, 1.0, 10);
+```
+
+---
+
+## Runge's function
+
+&lt;img src="4_function_approximation_files/figure-html/unnamed-chunk-10-J1.png" width="800" /&gt;
+
+---
+
+## Runge's function
+
+&lt;img src="4_function_approximation_files/figure-html/unnamed-chunk-11-J1.png" width="800" /&gt;
+
+---
+## Runge's function
+
+&lt;img src="4_function_approximation_files/figure-html/unnamed-chunk-12-J1.png" width="800" /&gt;
+
+---
+
+## Maybe we can just crank up n?
+
+&lt;img src="4_function_approximation_files/figure-html/unnamed-chunk-13-J1.png" width="800" /&gt;
+
+---
+
+## Maybe we can just crank up n?
+
+&lt;img src="4_function_approximation_files/figure-html/unnamed-chunk-14-J1.png" width="800" /&gt;
+
+---
+
+## Monomials are not good
+
+*What's the deal?* The matrix of monomials, `\(\Phi\)`, is often ill-conditioned, especially as the degree of the monomials increases
+
+- The first 6 monomials can induce a condition number of `\(10^{10}\)`, a substantial loss of precision
+- Monomials can vary dramatically in size, which leads to scaling/truncation errors
+  - `\(x^{11}\)` goes from `\(10^{-4}\)` to about `\(90\)` when moving `\(x\)` from `\(0.5\)` to `\(1.5\)`
+
+--
+
+Ideally we want an **orthogonal basis**
+- When we add another element of the basis, it has sufficiently different behavior than the elements before it so it can capture features of the unknown function that the previous elements couldn't
+
+---
+
+## The Chebyshev basis
+
+Most frequently used is the **Chebyshev basis**
+
+It has nice approximation properties:
+
+1. They are easy to compute
+
+--
+
+2. They are orthogonal
+
+--
+
+3. They are bounded between `\([-1,1]\)`
+
+---
+
+## The Chebyshev basis
+
+Chebyshev polynomials are often selected because they minimize the oscillations that occur when approximating functions like Runge's function
+
+--
+
+The Chebyshev polynomial closely approximates the *minimax polynomial*: the polynomial, given degree `\(d\)`,
+that minimizes any approximation error to the true function
+
+---
+
+## The Chebyshev basis
+
+Chebyshev polynomials are defined by a recurrence relation,
+
+`\begin{gather}
+	T_0(x) = 1 \\
+	T_1(x) = x  \\
+	T_{n+1} = 2xT_n(x) - T_{n-1}(x)
+\end{gather}`
+
+and are defined on the domain `\([-1,1]\)`
+
+--
+
+In practice this is easy to expand to any interval `\([a,b]\)`
+
+--
+
+Chebyshev polynomials look similar to monomials but have better properties that are visually distinctive
+
+---
+
+## The Chebyshev basis
+
+This is what the monomial basis functions look like up to degree 10
+
+**Monomials  clump together**
+
+&lt;div align="center"&gt;
+  &lt;image src="figures/monomials_span.png" height=350&gt;
+&lt;/div&gt;
+
+
+
+---
+
+## The Chebyshev basis
+
+And these are the **Chebyshev basis** functions up to degree 10
+
+**Chebyshev polynomials span the space**
+
+&lt;div align="center"&gt;
+  &lt;image src="figures/Chebyshev_span.png" height=350&gt;
+&lt;/div&gt;
+
+
+---
+
+## Chebyshev polynomials rule
+
+Chebyshev polynomials are nice for approximation because they are **orthogonal** and span the polynomial vector space
+
+This means that you can form any polynomial of degree equal to less than the Chebyshev polynomial you are using
+
+It also guarantees that `\(\Phi\)` has full rank and is invertible
+- The condition number is `\(\sqrt{2}\)`, which is pretty close to the ideal `\(1\)`
+
+They also have easy derivatives and integrals&lt;sup&gt;1&lt;/sup&gt;
+
+.footnote[&lt;sup&gt;1&lt;/sup&gt; See Miranda and Fackler Ch. 6.2 for the expression]
+
+---
+
+## Chebyshev polynomials rule
+
+Chebyshev polynomial of order `\(n\)` have `\(n\)` zeros given by
+
+`$$x_k = cos\left(\frac{2k-1}{2n}\pi \right), \; k=1,...,n$$`
+which tend to cluster quadratically towards the edges of the domain
+
+--
+
+You can think about this as projecting sequentially finer uniform grids from a hemicircle onto the x-axis
+
+---
+
+## Chebyshev interpolation in Julia
+
+We can also use `Polynomials.fit` and fit Chebyshev polynomials for us. We just need to add `ChebyshevT` as the first argument to let the method know we want Chebyshev polynomials
+
+
+```julia
+f(x) = sin(x);
+# Construct a grid with n nodes
+xs = range(-1, 1, length = 7);
+# Get our y = f(x) at the nodes
+ys = f.(xs);
+# Use Polynomials.fit to generate our ̂f hat
+# (if we omit the degree, it does n-1 by default)
+f_hat = Polynomials.fit(ChebyshevT, xs, ys) 
+```
+
+```
+## ChebyshevT(1.1102230246251565e-16⋅T_0(x) + 0.88009713587708⋅T_1(x) + 9.098609034624048e-17⋅T_2(x) - 0.039128003846193624⋅T_3(x) - 7.118575049196504e-17⋅T_4(x) + 0.0005018527770100587⋅T_5(x) - 9.098609034624048e-17⋅T_6(x))
+```
+
+---
+
+## .blue[Your turn!]
+
+Step 1: Write a function `interpolate_cheb(f, lower, upper, n)` that approximates any function `f` between `lower` and `upper` bounds with degree `n`
+- Remember that Chebyshev polynomials have domain `\([-1, 1]\)`, so, before we fit, we need to transform `\(x\)`
+
+$$ z(x) = \frac{2(x-l)}{u-l} -1 $$
+Step 2: Use your function to approximate `f(x) = log(1 + x^2)/(1 + x)` between `\(0\)` and `\(8\)` with `\(n\)` being 3, 7 and 10
+- You'll need to transform `\(x\)`, so that you'll call `f_hat(z(x))`
+
+Step 3: Plot `f(x)` and overlay it with the 3 approximations
+
+---
+
+## .blue[Chebyshev interpolation in Julia]
+
+
+```julia
+# First, we write a function to help with the transformation
+cheb_z(x, lower, upper) = 2*(x - lower)/(upper - lower) - 1;
+
+function interpolate_cheb(f, lower, upper, n)
+    xs = range(lower, upper, length = n)
+    ys = f.(xs)
+    # But we need z ∈ [-1, 1]
+    zs = cheb_z.(xs, lower, upper)
+    # Use Polynomials.fit to generate our ̂f hat with ChebyshevT
+    cheg_f_hat = Polynomials.fit(ChebyshevT, zs, ys, n-1)
+    # Create another function that transforms the input
+    transf_f_hat(x) = cheg_f_hat(cheb_z(x, lower, upper))
+    return transf_f_hat
+end;
+```
+
+---
+
+## .blue[Chebyshev interpolation in Julia]
+
+
+```julia
+f(x) = log(1 + x^2)/(1 + x);
+f_hat_3  = interpolate_cheb(f, 0, 8, 3);
+f_hat_7 = interpolate_cheb(f, 0, 8, 7);
+f_hat_10 = interpolate_cheb(f, 0, 8, 10);
+```
+
+
+---
+
+## .blue[Chebyshev interpolation in Julia]
+
+
+```julia
+Plots.plot(f, 0, 8, line = 4, grid = false, label = "f(x)", size = (400, 250),
+           xlabel = "x", ylabel = "f(x)", tickfontsize = 10, guidefontsize = 10,
+           legend=:bottomright)
+```
+
+&lt;img src="4_function_approximation_files/figure-html/unnamed-chunk-18-J1.png" width="533" /&gt;
+
+---
+
+## .blue[Chebyshev interpolation in Julia]
+
+
+```julia
+plot!(f_hat_3, 0, 8, color = :green, linewidth = 4.0, linestyle = :dashdot, label = "Approximation n = 3")
+```
+
+&lt;img src="4_function_approximation_files/figure-html/unnamed-chunk-19-J1.png" width="533" /&gt;
+
+
+---
+
+## .blue[Chebyshev interpolation in Julia]
+
+
+```julia
+plot!(f_hat_7, 0, 8, color = :red, linewidth = 4.0, linestyle = :dash, label = "Approximation n = 7")
+```
+
+&lt;img src="4_function_approximation_files/figure-html/unnamed-chunk-20-J1.png" width="533" /&gt;
+
+
+---
+
+## .blue[Chebyshev interpolation in Julia]
+
+
+```julia
+plot!(f_hat_10, 0, 8, color = :purple, linewidth = 4.0, linestyle = :dot, label = "Approximation n = 10")
+```
+
+&lt;img src="4_function_approximation_files/figure-html/unnamed-chunk-21-J1.png" width="533" /&gt;
+
+---
+
+## Chebyshev interpolation in Julia
+
+While `Polynomials` is has a nice unified approach to handle polynomials in general, it requires additional work to use Chebyshev polynomials (e.g., we had to transform `x` to use a different domain)
+
+--
+
+Instead, we can use specific packages for Chebyshev polynomials that will do that for us, such as `ChebyshevApprox.jl`
+
+---
+
+## Chebyshev interpolation in Julia
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
