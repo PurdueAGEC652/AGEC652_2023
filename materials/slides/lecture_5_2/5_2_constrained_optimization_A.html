@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>AGEC 652 - Lecture 5.2</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Diego S. Cardoso" />
+    <script src="5_2_constrained_optimization_A_files/header-attrs-2.19/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# AGEC 652 - Lecture 5.2
+]
+.subtitle[
+## Constrained optimization
+</p>
+Part A: Theory and solution algorithms
+]
+.author[
+### Diego S. Cardoso
+]
+.date[
+### Spring 2023
+]
+
+---
+
+exclude: true
+
+```r
+if (!require("pacman")) install.packages("pacman")
+```
+
+```
+## Loading required package: pacman
+```
+
+```r
+pacman::p_load(
+  xaringanthemer
+)
+
+#options(htmltools.dir.version = FALSE)
+
+knitr::opts_hooks$set(fig.callout = function(options) {
+  if (options$fig.callout) {
+    options$echo &lt;- FALSE
+  }
+
+  knitr::opts_chunk$set(echo = TRUE, fig.align="center")
+  options
+})
+```
+
+
+
+---
+
+## .blue[Course roadmap]
+
+1. .gray[Intro to Scientific Computing]
+2. .gray[Numerical operations and representations]
+3. .gray[Systems of equations]
+4. .gray[Function approximation (Skipped)]
+5. **Optimization**
+  - .gold[5.1 Unconstrained optimization]
+  - **5.2 Constrained optimization**
+    - A) **Theory and solution algorithms** `\(\leftarrow\)` *You are here*
+    - B) Constrained optimization in Julia
+6. Structural estimation
+
+---
+
+class: inverse, center, middle
+
+.footnote[\*These slides are based on Miranda &amp; Fackler (2002), Nocedal &amp; Wright (2006), Judd (1998), and course materials by Ivan Rudik and Florian Oswald.]
+
+---
+
+## Constrained optimization setup
+
+We want to solve 
+
+`$$\min_x f(x)$$`
+
+subject to
+
+`\begin{gather}
+  g(x) = 0\\
+  h(x) \leq 0
+\end{gather}`
+
+where `\(f:\mathbb{R}^n \rightarrow \mathbb{R}\)`, `\(g:\mathbb{R}^n \rightarrow \mathbb{R}^m\)`, `\(h:\mathbb{R}^n \rightarrow \mathbb{R}^l\)`, and `\(f, g\)`, and `\(h\)` are twice continuously differentiable
+- We have `\(m\)` *equality constraints* and `\(l\)` *inequality constraints*
+
+---
+
+## Constraint types
+
+Constraints come in two types: equality or inequality
+
+Let's see a an illustration with a single constraint. Consider the optimization problem
+
+$$
+\min_x -exp\left(-(x_1 x_2 - 1.5)^2 - (x_2 - 1.5)^2 \right)
+$$
+
+subject to `\(x_1 - x_2^2 = 0\)`
+
+- The equality constraint limits solutions along the curve where `\(x_1 = x_2^2\)`
+
+---
+
+## Constraint types
+
+&lt;div align="center"&gt;
+  &lt;img src="figures/equality_constraint.png", height=450&gt;
+&lt;/div&gt;
+
+---
+
+## Constraint types
+
+The problem can also be formulated with an inequality constraint
+
+$$
+\min_x -exp\left(-(x_1 x_2 - 1.5)^2 - (x_2 - 1.5)^2 \right)
+$$
+
+subject to `\(-x_1 + x_2^2 \leq 0\)`
+
+--
+
+How would that change feasible set compared to the equality constraint?
+
+---
+
+## Constraint types
+
+&lt;div style="float:right"&gt;
+  &lt;img src="figures/inequality_constraint_binding.png", height=400&gt;
+&lt;/div&gt;
+
+The feasible set is in blue
+- It extends below and to the right
+
+The solution in this case is along the boundaries of the feasible set
+- It coincides with the equality constraint
+- In those cases, we say the constraint is **binding** or **active** 
+
+---
+
+## Constraint types
+
+&lt;div style="float:right"&gt;
+  &lt;img src="figures/inequality_constraint_slack.png", height=400&gt;
+&lt;/div&gt;
+
+If the solution is *interior* to the feasible set, we say the constraint is **slack** or **inactive**
+- The solution to the constrained optimization problem is the same as the unconstrained one
+
+---
+
+## Solving constrained optimization problems
+
+You may recall from Math Econ courses that, under certain conditions, we can solve a constrained optimization problem by solving instead the corresponding *mixed complementary problem* using the first order conditions
+
+That trick follows from the **Karush-Kuhn-Tucker (KKT) Theorem**
+
+What does it say?
+
+---
+
+## Karush-Kuhn-Tucker Theorem
+
+&gt; If `\(x^*\)` is a local minimizer and the constraint qualification&lt;sup&gt;1&lt;/sup&gt; holds, then there are multipliers `\(\lambda^* \in \mathbb{R}^m\)` and `\(\mu^* \in \mathbb{R}^l\)` such that `\(x^*\)` is a stationary point of `\(\mathcal{L}\)`, the *Lagrangian* 
+
+.footnote[&lt;sup&gt;1&lt;/sup&gt;Constraint qualification, or regularity conditions, can be formulated depending on the nature of the constraint. We tend to overlook those in Economics, though.]
+
+
+$$
+\mathcal{L}(x, \lambda, \mu) = f(x) + \lambda^T g(x) + \mu^T h(x)
+$$
+
+- Variables `\(\lambda\)` and `\(\mu\)` are called *Lagrange multipliers* and in Economics have the intepretation of shadow prices
+
+--
+
+How does this theorem help us?
+
+---
+
+## Karush-Kuhn-Tucker Theorem
+
+Put another way, the theorem states that `\(\mathcal{L}_x(x^*, \lambda^*, \mu^*) = 0\)`
+
+--
+
+So, it tell us that `\((x^*, \lambda^*, \mu^*)\)` solve the system
+
+`\begin{gather}
+  f_x + \lambda^T g_x + \mu^T h_x = 0 \\
+  \mu_i h^i(x) = 0, \; i = 1, \dots, l \\
+  g(x) = 0 \\
+  h(x) \leq 0 \\
+  \mu \leq 0
+\end{gather}`
+
+
+- Subscripts ( `\(_x\)`) denote derivatives w.r.t. `\(x\)` (it's a vector)
+- `\(h^i(x)\)` is the `\(i\)`-th element of `\(h(x)\)`
+
+---
+
+## The KKT approach
+
+The KKT theorem gives us a first approach to solving unconstrained optimization problems
+
+- If the problem has box constraints ( `\(a \leq x \leq b\)`), we can solve the corresponding *mixed complementarity problem* `\(CP(f^\prime, a, b)\)` as we saw in unit 3
+--
+
+- If constraints are more elaborated and multidimensional, we need to solve a series of nonlinear systems: one for each possible combination of binding inequality constraints
+  - This is probably how you learned to solve utility maximization with a budget constraint
+
+
+---
+
+## The KKT approach
+
+Let `\(\mathcal{I}\)` be the set of `\({1, 2, ..., l}\)` inequality constraints. For a subset `\(\mathcal{P} \in \mathcal{I}\)` of, we define the `\(\mathcal{P}\)` problem as the nonlinear system of equations
+
+`\begin{gather}
+  f_x + \lambda^T g_x + \mu^T h_x = 0 \\
+  h^i(x) = 0, \; i \in \mathcal{P} \\
+  \mu_i = 0, \; i \in \mathcal{I} - \mathcal{P} \\
+  g(x) = 0 
+\end{gather}`
+
+--
+
+We solve this system for every possible combination of binding constraints `\(\mathcal{P}\)`
+- There might not be a solution for some combinations. That's OK
+- Compare the solutions of all combinations and pick the optimal (where `\(f\)` attains the smallest value, in this case)
+
+---
+
+## The KKT approach
+
+When we have a good intuition about the problem, we may know ahead of time which constraints will bind
+- For example, with monotonically increasing utility functions, we know the budget constraint binds
+
+--
+
+But as the number of constraints grows, we have an even larger number of possible combinations
+- More combinations = more nonlinear systems to solve and compare
+
+---
+
+## Other solution approaches
+
+The combinatorial nature of the KKT approach is not that desirable from a computational perspective
+- However, if the resulting nonlinear systems are simple to solve, we may still favor KKT
+
+There are computational alternatives to KKT. We'll discuss three types of algorithms
+
+- Penalty methods
+- Active set methods
+- Interior point methods
+
+
+---
+
+class: inverse, center, middle
+
+# Constrained optimization algorithms
+
+---
+
+## Penalty methods
+
+Suppose we wish to minimize some function subject to equality constraints (easily generalizes to inequality)
+`$$\min_x f(x) \,\,\, \text{s. t.} \,\, g(x) = 0$$`
+
+--
+
+How does an algorithm know to not violate the constraint?
+
+--
+
+One way is to introduce a **penalty function** into our objective and remove the constraint
+
+`$$Q(x;\rho) = f(x) + \rho P(g(x))$$`
+where `\(\rho\)` is the penalty parameter
+
+---
+
+## Penalty methods
+
+
+With this, we transformed it into an unconstrained optimization problem
+`$$\min_x Q(x; \rho) = f(x) + \rho P(g(x))$$`
+--
+
+How do we pick `\(P\)` and `\(\rho\)`?
+
+--
+
+A first idea is to penalize a candidate solution as much as possible whenever it leaves the feasible set: infinite penalty!
+
+`$$Q(x) = f(x) + \infty \mathbf{1}(g(x) \neq 0)$$`
+where `\(\mathbf{1}\)` is an indicator function
+
+- This is the **infinity step** method
+
+---
+
+## Penalty methods
+
+However, the infinite step method is a pretty bad idea
+
+- `\(Q\)` becomes discontinuous and non-differentiable: it's very hard for algorithms to iterate near the region where the constraint binds
+- Any really large value or `\(\rho\)` leads to the same practical problem
+
+--
+
+So we might instead use a more forgiving penalty function
+
+---
+
+## Penalty methods
+
+A widely-used choice is the quadratic penalty function
+
+`$$Q(x;\rho) = f(x) + \frac{\rho}{2} \sum_i g_i^2(x)$$`
+
+- For inequality constraint `\(h(x) \leq 0\)`, we can use `\([\max(0, h_i(x))]^2\)` 
+
+--
+
+The second term increases the value of the function
+- bigger `\(\rho \rightarrow\)` bigger penalty from violating the constraint
+
+--
+
+The penalty terms are smooth `\(\rightarrow\)` use unconstrained optimization techniques  
+to solve the problem by searching for iterates of `\(x_k\)`
+
+---
+
+## Penalty methods
+
+Algorithms generally iterate on sequences of `\(\rho_k \rightarrow \infty\)` as `\(k \rightarrow \infty\)`, to require satisfying the constraints as we close in
+
+--
+
+There are also *Augmented Lagrangian methods* that take the quadratic penalty method and add explicit estimates of Lagrange multipliers to help force binding constraints to bind precisely 
+
+---
+
+## Penalty method example
+
+Example:
+`$$\min x_1 + x_2 \,\,\,\,\,\text{      subject to:    } \,\,\, x_1^2 + x_2^2 - 2 = 0$$`
+
+--
+
+Solution is pretty easy to show to be `\((-1, -1)\)`
+
+--
+
+The penalty method function `\(Q(x_1, x_2; \rho)\)` is
+`$$Q(x_1, x_2; \rho) = x_1 + x_2 + \frac{\rho}{2} (x_1^2 + x_2^2 - 2)^2$$`
+
+--
+
+Let's ramp up `\(\rho\)` and see what happens to how the function looks
+
+---
+
+## Penalty method example
+
+`\(\rho = 1\)`, solution is around `\((-1.1, -1.1)\)`
+
+&lt;div align="center"&gt;
+  &lt;img src="figures/penalty_method_1.png" height=400&gt;
+&lt;/div&gt;
+
+---
+
+## Penalty method example
+
+`\(\rho = 10\)`, solution is very close to `\((-1, -1)\)`. Notice how quickly value increases outside `\(x_1^2 + x_2^2 = 2\)` circle
+
+&lt;div align="center"&gt;
+  &lt;img src="figures/penalty_method_2.png" height=400&gt;
+&lt;/div&gt;
+
+
+---
+
+## Active set methods
+
+The KKT method can lead to too many combinations of constraints to evaluate
+
+Penalty methods don't have the same problem but still require us to evaluate every constraint, even if they are not binding
+
+-- 
+
+Improving on the KKT approach, **active set methods** strategically to pick a sequence of combinations of constraints
+
+---
+
+## Active set methods
+
+Instead of trying all possible combinations, like in KKT, active set methods start with an initial guess of the binding constraints set
+
+Then, iterate by periodically checking constraints
+- Add or keep the ones that are active (binding)
+- Drop the ones that are inactive (slack)
+
+--
+
+If an appropriate strategy of picking sets is chosen, active set algorithms converge to the optimal solution
+  
+---
+
+## Interior point methods
+
+Interior point methods are also called **barrier methods**
+
+--
+
+These are typically used for inequality constrained problems
+
+--
+
+The name **interior point** comes from the algorithm traversing the domain along the interior of the inequality constraints
+
+--
+
+**Issue:** how do we ensure we are on the interior of the feasible set?
+
+--
+
+**Main idea:** impose a **barrier** to stop the solver from letting a constraint bind
+
+---
+
+## Interior point methods
+
+Consider the following constrained optimization problem
+`\begin{gather}
+	\min_{x} f(x) \notag\\
+	\text{subject to:  } g(x) = 0, h(x) \leq 0
+\end{gather}`
+
+--
+
+Reformulate this problem as
+`\begin{gather}
+	\min_{x,s} f(x) \notag\\
+	\text{subject to:  } g(x) = 0, h(x) + s = 0, s \geq 0
+\end{gather}`
+
+where `\(s\)` is a vector of slack variables for the constraints
+
+---
+
+## Interior point methods
+
+Final step: introduce a **barrier function** to eliminate the inequality constraint,
+`\begin{gather}
+	\min_{x,s} f(x) - \mu \sum_{i=1}^l log(s_i) \notag\\
+	\text{subject to:  } g(x) = 0, h(x) + s = 0
+\end{gather}`
+
+where `\(\mu &gt; 0\)` is a barrier parameter
+
+---
+
+## Interior point methods
+
+The barrier function prevents the components of `\(s\)` from approaching zero by imposing a logarithmic barrier `\(\rightarrow\)` it maintains slack in the constraints
+- Another common barrier function is `\(\sum_{i=1}^l (1/s_i)\)`
+
+--
+
+Interior point methods solve a sequence of barrier problems until `\(\mu_k\)` converges to zero
+
+--
+
+The solution to the barrier problem converges to that of the original problem
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
