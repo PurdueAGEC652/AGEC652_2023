@@ -67,8 +67,6 @@ style_extra_css(css = extra_css)
 
 ## .blue[Course roadmap]
 
-## .blue[Course roadmap]
-
 1. .gray[Intro to Scientific Computing]
 2. .gray[Numerical operations and representations]
 3. .gray[Systems of equations]
