@@ -238,8 +238,8 @@ By now, we can:
 
 By now, we can:
 
-- Approximate unknown functions and solve functional equations
-  - E.g.: interpolate between data points and solve for best-response functions
+- .gray[Approximate unknown functions and solve functional equations]
+  - .gray[E.g.: interpolate between data points and solve for best-response functions]
 
 --
 
