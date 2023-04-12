@@ -1,6 +1,9 @@
 # Syllabus AGEC 652 – Spring 2023 <!-- omit in toc -->
 
-*This syllabus is subject to revisions. You will be notified of any changes as far in advance as possible. Please monitor your Purdue email and Brightspace for updates. This version was created on Feb. 23, 2023.*
+*This syllabus is subject to revisions. You will be notified of any changes as far in advance as possible. Please monitor your Purdue email and Brightspace for updates. This version was created on April 11, 2023. (This version removes the standards associated with Function Approximation (skipped content) and adjusts the grade scales based on the new set of standards and the assignments available to demonstrate mastery).*
+
+
+
 
 ## Course information <!-- omit in toc -->
 
@@ -189,8 +192,8 @@ Your final grade in the course is determined by the following table. Each grade 
 
 | Grade | Core standards | Supplementary standards | Weekly problems | Mini-project | In-class practice |
 |---|---|---|---|---|---|
-| A | Mastery in all 8 + Continued Mastery in at least 6 | Mastery in at least 10 + Continued Mastery in 8 | Satisfactory in at least 75% | Received E | Satisfactory in at least 75% |
-| B | Mastery in all 8 + Continued Mastery in at least 4 | Mastery in at least 8 + Continued Mastery in 4 | Satisfactory in at least 75% | Received at least M | Satisfactory in at least 75% |
+| A | Mastery in all 8 + Continued Mastery in at least 3 | Mastery in at least 6 + Continued Mastery in 2 | Satisfactory in at least 75% | Received E | Satisfactory in at least 75% |
+| B | Mastery in all 8 + Continued Mastery in at least 1 | Mastery in at least 6 | Satisfactory in at least 75% | Received at least M | Satisfactory in at least 75% |
 | C | Mastery in all 8 | Mastery in at least 4 | Satisfactory in at least 50% | Received at least R | Satisfactory in at least 50% |
 | D | Mastery in at least 6 | No requirements | Satisfactory in at least 50% | Received at least R | Satisfactory in at least 50% |
 
@@ -302,7 +305,7 @@ In the event of a major campus emergency, course requirements, deadlines and gra
 
 ## Learning standards
 
-Learning standards are organized into six topics. The eight learning standards written in bold font are classified as **core standards** (P.3, C.1, C.3, C.4, S.1, S.2, O.1, O.2). The remaining twelve standards are refereed to as *supplementary standards*.
+Learning standards are organized into five topics. The eight learning standards written in bold font are classified as **core standards** (P.3, C.1, C.3, C.4, S.1, S.2, O.1, O.2). The remaining nice standards are refereed to as *supplementary standards*.
 
 **Scientific Programming (P)**
 
@@ -324,12 +327,6 @@ Learning standards are organized into six topics. The eight learning standards w
 - **S.2 - I can computationally represent nonlinear systems of equations as fixed-point and rootfinding problems and numerically solve them**
 - S.3 - I can computationally represent and numerically solve nonlinear complementarity problems
 - S.4 - I can identify and explain the pros and cons of different solution methods, including derivative-free, Newton, and Quasi-Newton methods
-
-**Function Approximation (A)**
-
-- A.1 - I can explain and program function interpolations with spectral methods
-- A.2 - I can explain and program function interpolations with finite element methods 
-- A.3 - I can computationally represent and numerically solve functional equations using the collocation method
 
 **Optimization (O)**
 

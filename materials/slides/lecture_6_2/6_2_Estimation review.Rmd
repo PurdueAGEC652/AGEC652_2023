@@ -178,7 +178,7 @@ $$(\hat{\beta}_{MLE},\hat{\sigma}^2_{MLE}) = \arg \max_{\beta,\sigma^2} L(\beta,
 
 --
 
-- As we saw it in the optimization tutorial, in practice we take logs to transform that product inside $L$ into a sum
+- As in the optimization tutorial, in practice we take logs to transform that product inside $L$ into a sum
   - We maximize the *log-likelihood function* $l(\beta,\sigma^2|X,Y)$
 
 ---
@@ -446,7 +446,7 @@ $$SE(\hat{\theta}_{MLE}) = \sqrt{diag(Var(\hat{\theta}_{MLE}))}$$
 --
 
 
-*For a step-by-step example of MLE, please review the optimization tutorial from unit 4*
+*For a step-by-step example of MLE, please review the optimization tutorial from unit 5*
 
 
 ---
